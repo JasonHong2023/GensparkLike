@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Genspark AI 工作空間</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    /* ═══════════════════════════════════════════
+       THEME VARIABLES
+       ═══════════════════════════════════════════ */
+    :root {
+      --bg: #1a1a1c;
+      --sidebar-bg: #1a1a1c;
+      --sidebar-border: #2d2d30;
+      --surface: #27272a;
+      --surface-hover: #3f3f46;
+      --border: #3f3f46;
+      --border-hover: #52525b;
+      --text: #ffffff;
+      --text-secondary: #d4d4d8;
+      --text-tertiary: #71717a;
+      --text-muted: #a1a1aa;
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --nav-active-bg: #2d2d30;
+      --menu-bg: #2e2e32;
+      --menu-hover: #3f3f46;
+      --placeholder: #71717a;
+      --btn-primary-bg: #ffffff;
+      --btn-primary-text: #000000;
+      --btn-primary-hover: #e4e4e7;
+      --scrollbar-thumb: rgba(255,255,255,0.08);
+    }
+
+    [data-theme="slate"] {
+      --bg: #141416; --sidebar-bg: #141416; --sidebar-border: #27272a;
+      --surface: #1f1f23; --surface-hover: #36363b; --border: #36363b;
+      --border-hover: #4a4a50; --text-muted: #8b8b95; --accent: #a1a1aa;
+      --accent-hover: #c4c4cc; --nav-active-bg: #27272a; --menu-bg: #27272a;
+      --menu-hover: #36363b; --placeholder: #63636e; --btn-primary-bg: #e4e4e7;
+      --btn-primary-text: #000; --scrollbar-thumb: rgba(255,255,255,0.06);
+    }
+    [data-theme="carbon"] {
+      --bg: #0a0a0a; --sidebar-bg: #0a0a0a; --sidebar-border: #1f1f1f;
+      --surface: #181818; --surface-hover: #2a2a2a; --border: #2a2a2a;
+      --border-hover: #404040; --text-muted: #8a8a8a; --accent: #fafafa;
+      --accent-hover: #ffffff; --nav-active-bg: #1f1f1f; --menu-bg: #1f1f1f;
+      --menu-hover: #2a2a2a; --placeholder: #5a5a5a; --btn-primary-bg: #fafafa;
+      --btn-primary-text: #0a0a0a; --btn-primary-hover: #e0e0e0;
+      --scrollbar-thumb: rgba(255,255,255,0.1);
+    }
+    [data-theme="forest"] {
+      --bg: #0f1412; --sidebar-bg: #0f1412; --sidebar-border: #1f2a23;
+      --surface: #1a241e; --surface-hover: #2a3830; --border: #2a3830;
+      --border-hover: #3d4f45; --text-muted: #9aaa9e; --accent: #4ade80;
+      --accent-hover: #6ee79e; --nav-active-bg: #1f2a23; --menu-bg: #1f2a23;
+      --menu-hover: #2a3830; --placeholder: #5a7a64; --btn-primary-bg: #4ade80;
+      --btn-primary-text: #0f1412; --btn-primary-hover: #6ee79e;
+      --scrollbar-thumb: rgba(74,222,128,0.12);
+    }
+    [data-theme="ocean"] {
+      --bg: #0f1117; --sidebar-bg: #0f1117; --sidebar-border: #1b2030;
+      --surface: #181d2e; --surface-hover: #262d45; --border: #262d45;
+      --border-hover: #38405e; --text-muted: #94a3b8; --accent: #38bdf8;
+      --accent-hover: #60d0fa; --nav-active-bg: #1b2030; --menu-bg: #1b2030;
+      --menu-hover: #262d45; --placeholder: #4a5a7a; --btn-primary-bg: #38bdf8;
+      --btn-primary-text: #0f1117; --btn-primary-hover: #60d0fa;
+      --scrollbar-thumb: rgba(56,189,248,0.12);
+    }
+    [data-theme="pine"] {
+      --bg: #14120e; --sidebar-bg: #14120e; --sidebar-border: #262218;
+      --surface: #1f1c14; --surface-hover: #2f2a1e; --border: #2f2a1e;
+      --border-hover: #423c2e; --text-muted: #b4a88a; --accent: #d97706;
+      --accent-hover: #e8912e; --nav-active-bg: #262218; --menu-bg: #262218;
+      --menu-hover: #2f2a1e; --placeholder: #6a5e42; --btn-primary-bg: #d97706;
+      --btn-primary-text: #14120e; --btn-primary-hover: #e8912e;
+      --scrollbar-thumb: rgba(217,119,6,0.15);
+    }
+    [data-theme="moss"] {
+      --bg: #111412; --sidebar-bg: #111412; --sidebar-border: #1f281e;
+      --surface: #1a241a; --surface-hover: #2a382a; --border: #2a382a;
+      --border-hover: #3d4f3d; --text-muted: #9aaa8a; --accent: #84cc16;
+      --accent-hover: #9fdb3a; --nav-active-bg: #1f281e; --menu-bg: #1f281e;
+      --menu-hover: #2a382a; --placeholder: #5a7a4a; --btn-primary-bg: #84cc16;
+      --btn-primary-text: #111412; --btn-primary-hover: #9fdb3a;
+      --scrollbar-thumb: rgba(132,204,22,0.13);
+    }
+    [data-theme="sunset"] {
+      --bg: #1c1310; --sidebar-bg: #1c1310; --sidebar-border: #2e1f1a;
+      --surface: #2a1a14; --surface-hover: #3d2a22; --border: #3d2a22;
+      --border-hover: #503c32; --text-muted: #c4a898; --accent: #ff7b4a;
+      --accent-hover: #ff9a70; --nav-active-bg: #2e1f1a; --menu-bg: #2e1f1a;
+      --menu-hover: #3d2a22; --placeholder: #7a5a4a; --btn-primary-bg: #ff7b4a;
+      --btn-primary-text: #1c1310; --btn-primary-hover: #ff9a70;
+      --scrollbar-thumb: rgba(255,123,74,0.15);
+    }
+    [data-theme="ember"] {
+      --bg: #1a0f0f; --sidebar-bg: #1a0f0f; --sidebar-border: #2e1a1a;
+      --surface: #2a1616; --surface-hover: #3d2424; --border: #3d2424;
+      --border-hover: #503232; --text-muted: #c48888; --accent: #ef4444;
+      --accent-hover: #f26666; --nav-active-bg: #2e1a1a; --menu-bg: #2e1a1a;
+      --menu-hover: #3d2424; --placeholder: #7a4a4a; --btn-primary-bg: #ef4444;
+      --btn-primary-text: #1a0f0f; --btn-primary-hover: #f26666;
+      --scrollbar-thumb: rgba(239,68,68,0.15);
+    }
+    [data-theme="amber"] {
+      --bg: #1a150e; --sidebar-bg: #1a150e; --sidebar-border: #2e2618;
+      --surface: #2a2216; --surface-hover: #3d3424; --border: #3d3424;
+      --border-hover: #504632; --text-muted: #c4b088; --accent: #f59e0b;
+      --accent-hover: #f7b23a; --nav-active-bg: #2e2618; --menu-bg: #2e2618;
+      --menu-hover: #3d3424; --placeholder: #7a6a4a; --btn-primary-bg: #f59e0b;
+      --btn-primary-text: #1a150e; --btn-primary-hover: #f7b23a;
+      --scrollbar-thumb: rgba(245,158,11,0.15);
+    }
+    [data-theme="rose"] {
+      --bg: #1a1016; --sidebar-bg: #1a1016; --sidebar-border: #2e1a26;
+      --surface: #2a1822; --surface-hover: #3d2634; --border: #3d2634;
+      --border-hover: #503446; --text-muted: #c488a8; --accent: #f472b6;
+      --accent-hover: #f68fc6; --nav-active-bg: #2e1a26; --menu-bg: #2e1a26;
+      --menu-hover: #3d2634; --placeholder: #7a4a6a; --btn-primary-bg: #f472b6;
+      --btn-primary-text: #1a1016; --btn-primary-hover: #f68fc6;
+      --scrollbar-thumb: rgba(244,114,182,0.15);
+    }
+    [data-theme="violet"] {
+      --bg: #121018; --sidebar-bg: #121018; --sidebar-border: #221e30;
+      --surface: #1f1a2e; --surface-hover: #2e2845; --border: #2e2845;
+      --border-hover: #40385e; --text-muted: #a898c4; --accent: #a78bfa;
+      --accent-hover: #bda6fb; --nav-active-bg: #221e30; --menu-bg: #221e30;
+      --menu-hover: #2e2845; --placeholder: #5a4a7a; --btn-primary-bg: #a78bfa;
+      --btn-primary-text: #121018; --btn-primary-hover: #bda6fb;
+      --scrollbar-thumb: rgba(167,139,250,0.12);
+    }
+    [data-theme="sapphire"] {
+      --bg: #0f1220; --sidebar-bg: #0f1220; --sidebar-border: #1a2040;
+      --surface: #181d3a; --surface-hover: #262d56; --border: #262d56;
+      --border-hover: #384070; --text-muted: #8ea8c8; --accent: #60a5fa;
+      --accent-hover: #82bafb; --nav-active-bg: #1a2040; --menu-bg: #1a2040;
+      --menu-hover: #262d56; --placeholder: #4a5a8a; --btn-primary-bg: #60a5fa;
+      --btn-primary-text: #0f1220; --btn-primary-hover: #82bafb;
+      --scrollbar-thumb: rgba(96,165,250,0.12);
+    }
+    [data-theme="teal"] {
+      --bg: #0f1416; --sidebar-bg: #0f1416; --sidebar-border: #1a2628;
+      --surface: #182426; --surface-hover: #26383a; --border: #26383a;
+      --border-hover: #384c4e; --text-muted: #88b8b8; --accent: #2dd4bf;
+      --accent-hover: #56dfce; --nav-active-bg: #1a2628; --menu-bg: #1a2628;
+      --menu-hover: #26383a; --placeholder: #4a7a74; --btn-primary-bg: #2dd4bf;
+      --btn-primary-text: #0f1416; --btn-primary-hover: #56dfce;
+      --scrollbar-thumb: rgba(45,212,191,0.13);
+    }
+    [data-theme="frost"] {
+      --bg: #121416; --sidebar-bg: #121416; --sidebar-border: #202428;
+      --surface: #1c2026; --surface-hover: #2a303a; --border: #2a303a;
+      --border-hover: #3c4450; --text-muted: #8aa8c0; --accent: #7dd3fc;
+      --accent-hover: #98defd; --nav-active-bg: #202428; --menu-bg: #202428;
+      --menu-hover: #2a303a; --placeholder: #4a6a84; --btn-primary-bg: #7dd3fc;
+      --btn-primary-text: #121416; --btn-primary-hover: #98defd;
+      --scrollbar-thumb: rgba(125,211,252,0.12);
+    }
+    [data-theme="midnight"] {
+      --bg: #0a0a14; --sidebar-bg: #0a0a14; --sidebar-border: #1a1a30;
+      --surface: #14142e; --surface-hover: #242448; --border: #242448;
+      --border-hover: #34346a; --text-muted: #9494c4; --accent: #c084fc;
+      --accent-hover: #d09efd; --nav-active-bg: #1a1a30; --menu-bg: #1a1a30;
+      --menu-hover: #242448; --placeholder: #5a4a8a; --btn-primary-bg: #c084fc;
+      --btn-primary-text: #0a0a14; --btn-primary-hover: #d09efd;
+      --scrollbar-thumb: rgba(192,132,252,0.13);
+    }
+    [data-theme="cinnamor"] {
+      --bg: #1a1210; --sidebar-bg: #1a1210; --sidebar-border: #2e1e1a;
+      --surface: #2a1e18; --surface-hover: #3d2e26; --border: #3d2e26;
+      --border-hover: #504038; --text-muted: #c4a48a; --accent: #fb923c;
+      --accent-hover: #fca866; --nav-active-bg: #2e1e1a; --menu-bg: #2e1e1a;
+      --menu-hover: #3d2e26; --placeholder: #7a624a; --btn-primary-bg: #fb923c;
+      --btn-primary-text: #1a1210; --btn-primary-hover: #fca866;
+      --scrollbar-thumb: rgba(251,146,60,0.15);
+    }
+    [data-theme="abyss"] {
+      --bg: #050505; --sidebar-bg: #050505; --sidebar-border: #141414;
+      --surface: #111111; --surface-hover: #222222; --border: #222222;
+      --border-hover: #363636; --text-muted: #7a8a7a; --accent: #22c55e;
+      --accent-hover: #4ad47a; --nav-active-bg: #141414; --menu-bg: #141414;
+      --menu-hover: #222222; --placeholder: #3a5a4a; --btn-primary-bg: #22c55e;
+      --btn-primary-text: #050505; --btn-primary-hover: #4ad47a;
+      --scrollbar-thumb: rgba(34,197,94,0.13);
+    }
+    [data-theme="royal"] {
+      --bg: #100f18; --sidebar-bg: #100f18; --sidebar-border: #221e30;
+      --surface: #1c1930; --surface-hover: #2e2848; --border: #2e2848;
+      --border-hover: #403a62; --text-muted: #b8a88a; --accent: #fbbf24;
+      --accent-hover: #fccc4e; --nav-active-bg: #221e30; --menu-bg: #221e30;
+      --menu-hover: #2e2848; --placeholder: #6a5a4a; --btn-primary-bg: #fbbf24;
+      --btn-primary-text: #100f18; --btn-primary-hover: #fccc4e;
+      --scrollbar-thumb: rgba(251,191,36,0.15);
+    }
+    [data-theme="blood"] {
+      --bg: #120a0a; --sidebar-bg: #120a0a; --sidebar-border: #261414;
+      --surface: #221010; --surface-hover: #361e1e; --border: #361e1e;
+      --border-hover: #4a2a2a; --text-muted: #b47878; --accent: #dc2626;
+      --accent-hover: #e44a4a; --nav-active-bg: #261414; --menu-bg: #261414;
+      --menu-hover: #361e1e; --placeholder: #6a3a3a; --btn-primary-bg: #dc2626;
+      --btn-primary-text: #120a0a; --btn-primary-hover: #e44a4a;
+      --scrollbar-thumb: rgba(220,38,38,0.15);
+    }
+    [data-theme="steel"] {
+      --bg: #121214; --sidebar-bg: #121214; --sidebar-border: #22222a;
+      --surface: #1c1c24; --surface-hover: #2e2e38; --border: #2e2e38;
+      --border-hover: #40404e; --text-muted: #8890a0; --accent: #64748b;
+      --accent-hover: #8192a6; --nav-active-bg: #22222a; --menu-bg: #22222a;
+      --menu-hover: #2e2e38; --placeholder: #4a5260; --btn-primary-bg: #64748b;
+      --btn-primary-text: #121214; --btn-primary-hover: #8192a6;
+      --scrollbar-thumb: rgba(100,116,139,0.12);
+    }
+    [data-theme="cherry"] {
+      --bg: #140a0e; --sidebar-bg: #140a0e; --sidebar-border: #28141c;
+      --surface: #22101a; --surface-hover: #361e2c; --border: #361e2c;
+      --border-hover: #4a2c3e; --text-muted: #c47a8e; --accent: #fb7185;
+      --accent-hover: #fc8fa2; --nav-active-bg: #28141c; --menu-bg: #28141c;
+      --menu-hover: #361e2c; --placeholder: #6a4252; --btn-primary-bg: #fb7185;
+      --btn-primary-text: #140a0e; --btn-primary-hover: #fc8fa2;
+      --scrollbar-thumb: rgba(251,113,133,0.14);
+    }
+    [data-theme="ink"] {
+      --bg: #0c0c18; --sidebar-bg: #0c0c18; --sidebar-border: #1a1a30;
+      --surface: #141428; --surface-hover: #242442; --border: #242442;
+      --border-hover: #34345e; --text-muted: #8888b0; --accent: #f5d742;
+      --accent-hover: #f7e066; --nav-active-bg: #1a1a30; --menu-bg: #1a1a30;
+      --menu-hover: #242442; --placeholder: #4a4a6a; --btn-primary-bg: #f5d742;
+      --btn-primary-text: #0c0c18; --btn-primary-hover: #f7e066;
+      --scrollbar-thumb: rgba(245,215,66,0.15);
+    }
+    [data-theme="shadow"] {
+      --bg: #060608; --sidebar-bg: #060608; --sidebar-border: #16161c;
+      --surface: #12121a; --surface-hover: #242430; --border: #242430;
+      --border-hover: #363646; --text-muted: #8890a0; --accent: #cbd5e1;
+      --accent-hover: #dce3ec; --nav-active-bg: #16161c; --menu-bg: #16161c;
+      --menu-hover: #242430; --placeholder: #4a4a5a; --btn-primary-bg: #cbd5e1;
+      --btn-primary-text: #060608; --btn-primary-hover: #dce3ec;
+      --scrollbar-thumb: rgba(203,213,225,0.1);
+    }
+    [data-theme="lavender"] {
+      --bg: #121018; --sidebar-bg: #121018; --sidebar-border: #221e30;
+      --surface: #1f1a30; --surface-hover: #2e2848; --border: #2e2848;
+      --border-hover: #403862; --text-muted: #b098c8; --accent: #c4b5fd;
+      --accent-hover: #d2c6fd; --nav-active-bg: #221e30; --menu-bg: #221e30;
+      --menu-hover: #2e2848; --placeholder: #5a4a7a; --btn-primary-bg: #c4b5fd;
+      --btn-primary-text: #121018; --btn-primary-hover: #d2c6fd;
+      --scrollbar-thumb: rgba(196,181,253,0.12);
+    }
+    [data-theme="cedar"] {
+      --bg: #120e0a; --sidebar-bg: #120e0a; --sidebar-border: #241e14;
+      --surface: #1e1a12; --surface-hover: #2e2a20; --border: #2e2a20;
+      --border-hover: #423c30; --text-muted: #a8987a; --accent: #b8860b;
+      --accent-hover: #cc9a1a; --nav-active-bg: #241e14; --menu-bg: #241e14;
+      --menu-hover: #2e2a20; --placeholder: #5a5242; --btn-primary-bg: #b8860b;
+      --btn-primary-text: #120e0a; --btn-primary-hover: #cc9a1a;
+      --scrollbar-thumb: rgba(184,134,11,0.14);
+    }
+    [data-theme="storm"] {
+      --bg: #0e1016; --sidebar-bg: #0e1016; --sidebar-border: #1e2028;
+      --surface: #1a1c28; --surface-hover: #2a2e3e; --border: #2a2e3e;
+      --border-hover: #3c4056; --text-muted: #8898a8; --accent: #facc15;
+      --accent-hover: #fbd44a; --nav-active-bg: #1e2028; --menu-bg: #1e2028;
+      --menu-hover: #2a2e3e; --placeholder: #4a5a6a; --btn-primary-bg: #facc15;
+      --btn-primary-text: #0e1016; --btn-primary-hover: #fbd44a;
+      --scrollbar-thumb: rgba(250,204,21,0.14);
+    }
+    [data-theme="copper"] {
+      --bg: #140e0a; --sidebar-bg: #140e0a; --sidebar-border: #281c14;
+      --surface: #221a14; --surface-hover: #362c22; --border: #362c22;
+      --border-hover: #4a3e32; --text-muted: #b49a82; --accent: #c2410c;
+      --accent-hover: #d45a22; --nav-active-bg: #281c14; --menu-bg: #281c14;
+      --menu-hover: #362c22; --placeholder: #6a5242; --btn-primary-bg: #c2410c;
+      --btn-primary-text: #140e0a; --btn-primary-hover: #d45a22;
+      --scrollbar-thumb: rgba(194,65,12,0.15);
+    }
+    [data-theme="neon"] {
+      --bg: #0a0a12; --sidebar-bg: #0a0a12; --sidebar-border: #18182a;
+      --surface: #12122a; --surface-hover: #222244; --border: #222244;
+      --border-hover: #323266; --text-muted: #7a9aaa; --accent: #22d3ee;
+      --accent-hover: #4eddf2; --nav-active-bg: #18182a; --menu-bg: #18182a;
+      --menu-hover: #222244; --placeholder: #3a5a6a; --btn-primary-bg: #22d3ee;
+      --btn-primary-text: #0a0a12; --btn-primary-hover: #4eddf2;
+      --scrollbar-thumb: rgba(34,211,238,0.13);
+    }
+    [data-theme="dusk"] {
+      --bg: #121018; --sidebar-bg: #121018; --sidebar-border: #1e1c30;
+      --surface: #1c1a30; --surface-hover: #2e2a4a; --border: #2e2a4a;
+      --border-hover: #403c64; --text-muted: #9090b8; --accent: #818cf8;
+      --accent-hover: #9ba3fa; --nav-active-bg: #1e1c30; --menu-bg: #1e1c30;
+      --menu-hover: #2e2a4a; --placeholder: #4a4a7a; --btn-primary-bg: #818cf8;
+      --btn-primary-text: #121018; --btn-primary-hover: #9ba3fa;
+      --scrollbar-thumb: rgba(129,140,248,0.12);
+    }
+
+    /* ── Left Sidebar ── */
+    .sidebar {
+      width: 72px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 10;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .nav-top, .nav-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      gap: 4px;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-item:hover { color: var(--text); }
+    .nav-icon {
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      transition: background 0.15s ease;
+    }
+    .nav-item.active .nav-icon {
+      background-color: var(--nav-active-bg);
+      color: var(--text);
+    }
+
+    /* ── Theme flyout (third level) ── */
+    .menu-item.has-submenu {
+      position: static;
+    }
+    .theme-flyout {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      bottom: 0;
+      background: var(--menu-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 200px;
+      overflow-y: auto;
+      padding: 6px 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      z-index: 110;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .menu-item.has-submenu:hover .theme-flyout,
+    .menu-item.has-submenu .theme-flyout:hover {
+      display: block;
+      opacity: 1;
+    }
+    .theme-flyout .theme-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+    .theme-flyout .theme-item:hover { background: var(--menu-hover); color: var(--text); }
+    .theme-swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .theme-flyout .theme-item.active-theme { color: var(--text); }
+    .theme-flyout .theme-item.active-theme .theme-swatch {
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    /* ── User Menu Dropdown ── */
+    .user-menu {
+      position: absolute;
+      bottom: 64px;
+      left: 16px;
+      background: var(--menu-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 220px;
+      padding: 8px 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .user-menu.hidden { display: none; }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+    .menu-item:hover { background: var(--menu-hover); color: var(--text); }
+    .menu-item-left { display: flex; align-items: center; gap: 12px; }
+    .menu-icon { font-size: 16px; color: var(--text-muted); }
+    .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+    .menu-arrow { color: var(--text-muted); font-size: 16px; }
+
+    /* ── Top-right actions ── */
+    .top-right-actions {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      display: flex;
+      gap: 12px;
+      z-index: 20;
+    }
+    .btn-login {
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease;
+    }
+    .btn-login:hover { background: var(--btn-primary-hover); }
+    .btn-register {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .btn-register:hover { background: var(--surface-hover); }
+
+    /* ── Main content ── */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 10vh;
+      min-width: 0;
+    }
+
+    .workspace-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Search ── */
+    .search-container {
+      width: 100%;
+      max-width: 760px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 60px;
+      transition: background 0.25s ease, border-color 0.2s ease;
+    }
+    .search-container:focus-within { border-color: var(--border-hover); }
+
+    .search-input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-input::placeholder { color: var(--placeholder); }
+
+    .search-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .controls-left, .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .control-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .control-btn:hover { background: var(--surface-hover); }
+
+    .chat-btn {
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      transition: background 0.2s ease;
+    }
+    .chat-btn:hover { background: var(--btn-primary-hover); }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+      transition: color 0.15s ease;
+    }
+    .icon-btn:hover { color: var(--text); }
+
+    /* ── Tools Grid ── */
+    .tools-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+    }
+    .tool-category {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-right: 1px solid var(--sidebar-border);
+      padding-right: 24px;
+    }
+    .tool-category:last-child {
+      border-right: none;
+      padding-right: 0;
+    }
+    .category-title {
+      color: var(--text-tertiary);
+      font-size: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tools-list {
+      display: flex;
+      gap: 24px;
+    }
+    .tool-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      width: 56px;
+    }
+    .tool-item:hover { opacity: 0.8; }
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .tool-icon:hover { background: var(--surface-hover); }
+    .tool-name {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+
+    /* ── Responsive ── */
+    /* ── Assistant flyout ── */
+    .menu-item.has-submenu-assistant {
+      position: static;
+    }
+    .assistant-flyout {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      bottom: 0;
+      background: var(--menu-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 120px;
+      padding: 6px 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      z-index: 110;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .menu-item.has-submenu-assistant:hover .assistant-flyout,
+    .menu-item.has-submenu-assistant .assistant-flyout:hover {
+      display: block;
+      opacity: 1;
+    }
+    .assistant-flyout .assistant-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+    .assistant-flyout .assistant-item:hover { background: var(--menu-hover); color: var(--text); }
+    .assistant-flyout .assistant-item.active-assistant { color: var(--text); }
+
+    /* ── Floating assistant icon ── */
+    .assistant-float {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 28px;
+      z-index: 9999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+      transition: background 0.2s ease, transform 0.2s ease;
+      user-select: none;
+    }
+    .assistant-float:hover { transform: scale(1.08); }
+    .assistant-float.hidden { display: none; }
+
+    /* ── Chat dialog ── */
+    .assistant-chat {
+      position: fixed;
+      right: 28px;
+      bottom: 100px;
+      width: 380px;
+      height: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: none;
+      flex-direction: column;
+      z-index: 9998;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+    .assistant-chat.open { display: flex; }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .chat-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+      transition: color 0.15s ease;
+    }
+    .chat-close:hover { color: var(--text); }
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-message {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .chat-message.assistant {
+      align-self: flex-start;
+      background: var(--surface-hover);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+    .chat-message.user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-input-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .chat-input {
+      flex: 1;
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 14px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+    .chat-input::placeholder { color: var(--placeholder); }
+    .chat-send {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .chat-send:hover { background: var(--accent-hover); }
+
+    @media (max-width: 900px) {
+      .tools-grid { gap: 32px; }
+      .tool-category { padding-right: 32px; }
+      .tools-list { gap: 16px; }
+    }
+    @media (max-width: 740px) {
+      .tool-category { border-right: none; padding-right: 0; }
+      .top-right-actions { display: none; }
+    }
+    @media (max-width: 640px) {
+      .sidebar { width: 56px; }
+      .nav-item { font-size: 0; }
+      .nav-item .nav-label { display: none; }
+      .main-content { padding: 16px; justify-content: flex-start; padding-top: 12vh; }
+      .workspace-title { font-size: 20px; margin-bottom: 24px; }
+      .search-container { padding: 12px 14px; }
+      .tool-item { width: 48px; }
+      .tool-icon { width: 42px; height: 42px; font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="nav-top">
+      <a href="../" class="nav-item" style="margin-bottom:4px;">
+        <span class="nav-icon" style="font-size:18px;">✦</span>
+      </a>
+      <div class="nav-item"><span class="nav-icon">➕</span><span class="nav-label">New</span></div>
+      <div class="nav-item active"><span class="nav-icon">🏠</span><span class="nav-label">首頁</span></div>
+      <div class="nav-item"><span class="nav-icon">🧰</span><span class="nav-label">技能</span></div>
+      <div class="nav-item"><span class="nav-icon">🦖</span><span class="nav-label">Claw</span></div>
+      <div class="nav-item"><span class="nav-icon">🔗</span><span class="nav-label">工作流程</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">雲端硬碟</span></div>
+      <div class="nav-item"><span class="nav-icon">•••</span><span class="nav-label">更多</span></div>
+    </div>
+    <div class="nav-bottom">
+      <div class="nav-item" id="user-avatar"><span class="nav-icon">👤</span></div>
+    </div>
+  </aside>
+
+  <!-- User Menu Dropdown -->
+  <div class="user-menu hidden" id="user-menu">
+    <div class="menu-item">
+      <div class="menu-item-left"><span class="menu-icon">🏢</span> 企業版</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-left"><span class="menu-icon">📥</span> 下載</div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-left"><span class="menu-icon">⚙️</span> 設置</div>
+    </div>
+    <div class="menu-item has-submenu">
+      <div class="menu-item-left"><span class="menu-icon">🎨</span> 主題</div>
+      <span class="menu-arrow">›</span>
+      <div class="theme-flyout">
+        <div class="theme-item active-theme" data-theme="default"><span class="theme-swatch" style="background:#3b82f6;"></span> Default</div>
+        <div class="theme-item" data-theme="slate"><span class="theme-swatch" style="background:#a1a1aa;"></span> Slate</div>
+        <div class="theme-item" data-theme="carbon"><span class="theme-swatch" style="background:#fafafa;"></span> Carbon</div>
+        <div class="theme-item" data-theme="forest"><span class="theme-swatch" style="background:#4ade80;"></span> Forest</div>
+        <div class="theme-item" data-theme="ocean"><span class="theme-swatch" style="background:#38bdf8;"></span> Ocean</div>
+        <div class="theme-item" data-theme="pine"><span class="theme-swatch" style="background:#d97706;"></span> Pine</div>
+        <div class="theme-item" data-theme="moss"><span class="theme-swatch" style="background:#84cc16;"></span> Moss</div>
+        <div class="theme-item" data-theme="sunset"><span class="theme-swatch" style="background:#ff7b4a;"></span> Sunset</div>
+        <div class="theme-item" data-theme="ember"><span class="theme-swatch" style="background:#ef4444;"></span> Ember</div>
+        <div class="theme-item" data-theme="amber"><span class="theme-swatch" style="background:#f59e0b;"></span> Amber</div>
+        <div class="theme-item" data-theme="rose"><span class="theme-swatch" style="background:#f472b6;"></span> Rose</div>
+        <div class="theme-item" data-theme="violet"><span class="theme-swatch" style="background:#a78bfa;"></span> Violet</div>
+        <div class="theme-item" data-theme="sapphire"><span class="theme-swatch" style="background:#60a5fa;"></span> Sapphire</div>
+        <div class="theme-item" data-theme="teal"><span class="theme-swatch" style="background:#2dd4bf;"></span> Teal</div>
+        <div class="theme-item" data-theme="frost"><span class="theme-swatch" style="background:#7dd3fc;"></span> Frost</div>
+        <div class="theme-item" data-theme="midnight"><span class="theme-swatch" style="background:#c084fc;"></span> Midnight</div>
+        <div class="theme-item" data-theme="cinnamor"><span class="theme-swatch" style="background:#fb923c;"></span> Cinnamor</div>
+        <div class="theme-item" data-theme="abyss"><span class="theme-swatch" style="background:#22c55e;"></span> Abyss</div>
+        <div class="theme-item" data-theme="royal"><span class="theme-swatch" style="background:#fbbf24;"></span> Royal</div>
+        <div class="theme-item" data-theme="blood"><span class="theme-swatch" style="background:#dc2626;"></span> Blood</div>
+      <div class="theme-item" data-theme="steel"><span class="theme-swatch" style="background:#64748b;"></span> Steel</div>
+      <div class="theme-item" data-theme="cherry"><span class="theme-swatch" style="background:#fb7185;"></span> Cherry</div>
+      <div class="theme-item" data-theme="ink"><span class="theme-swatch" style="background:#f5d742;"></span> Ink</div>
+      <div class="theme-item" data-theme="shadow"><span class="theme-swatch" style="background:#cbd5e1;"></span> Shadow</div>
+      <div class="theme-item" data-theme="lavender"><span class="theme-swatch" style="background:#c4b5fd;"></span> Lavender</div>
+      <div class="theme-item" data-theme="cedar"><span class="theme-swatch" style="background:#b8860b;"></span> Cedar</div>
+      <div class="theme-item" data-theme="storm"><span class="theme-swatch" style="background:#facc15;"></span> Storm</div>
+      <div class="theme-item" data-theme="copper"><span class="theme-swatch" style="background:#c2410c;"></span> Copper</div>
+      <div class="theme-item" data-theme="neon"><span class="theme-swatch" style="background:#22d3ee;"></span> Neon</div>
+      <div class="theme-item" data-theme="dusk"><span class="theme-swatch" style="background:#818cf8;"></span> Dusk</div>
+      </div>
+    </div>
+    <div class="menu-item">
+      <div class="menu-item-left"><span class="menu-icon">🛟</span> 幫助</div>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item has-submenu-assistant">
+      <div class="menu-item-left"><span class="menu-icon">🤖</span> 小助教設定</div>
+      <span class="menu-arrow">›</span>
+      <div class="assistant-flyout">
+        <div class="assistant-item" data-mode="off">關閉</div>
+        <div class="assistant-item" data-mode="robot">機器人</div>
+        <div class="assistant-item active-assistant" data-mode="cat">貓派</div>
+        <div class="assistant-item" data-mode="dog">狗派</div>
+      </div>
+    </div>
+    <div class="menu-divider"></div>
+    <div class="menu-item" style="color:var(--text);">
+      <div class="menu-item-left">登入</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Top-right actions -->
+    <div class="top-right-actions">
+      <button class="btn-login">登入</button>
+      <button class="btn-register">註冊</button>
+    </div>
+
+    <h1 class="workspace-title">GensparkLike AI 工作空間 4.0 <span style="color:#52525b;">›</span></h1>
+
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="問任何問題，創造任何事物" />
+      <div class="search-controls">
+        <div class="controls-left">
+          <button class="icon-btn">➕</button>
+          <button class="control-btn">⚖️ 標準 ⌄</button>
+          <button class="control-btn">🔌 連接器</button>
+        </div>
+        <div class="controls-right">
+          <button class="icon-btn">🎤</button>
+          <button class="chat-btn">💬 對話</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tools-grid">
+
+      <div class="tool-category">
+        <div class="category-title">AI 員工</div>
+        <div class="tools-list">
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#ef4444;">🔧</div>
+            <div class="tool-name">Claw</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-category">
+        <div class="category-title">辦公套件 ⌄</div>
+        <div class="tools-list">
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#f59e0b;">📊</div>
+            <div class="tool-name">AI 簡報</div>
+          </div>
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#10b981;">📋</div>
+            <div class="tool-name">AI 表格</div>
+          </div>
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#3b82f6;">📝</div>
+            <div class="tool-name">AI 文件</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-category">
+        <div class="category-title">設計與程式碼</div>
+        <div class="tools-list">
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#6366f1;">🎨</div>
+            <div class="tool-name">設計</div>
+          </div>
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#0ea5e9;">💻</div>
+            <div class="tool-name">程式碼</div>
+          </div>
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#3b82f6;">🗄️</div>
+            <div class="tool-name">儀表板與 CRM</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-category">
+        <div class="category-title">內容創作 ⌄</div>
+        <div class="tools-list">
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#8b5cf6;">💬</div>
+            <div class="tool-name">AI 聊天</div>
+          </div>
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#6366f1;">🖼️</div>
+            <div class="tool-name">AI 影像</div>
+          </div>
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#f59e0b;">▶️</div>
+            <div class="tool-name">AI 影片</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-category" style="border:none;">
+        <div class="category-title">工具</div>
+        <div class="tools-list">
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#10b981;">📓</div>
+            <div class="tool-name">AI 會議筆記</div>
+          </div>
+          <div class="tool-item">
+            <div class="tool-icon" style="color:#a8a29e;">✨</div>
+            <div class="tool-name">所有智能體</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Floating assistant icon -->
+  <div class="assistant-float" id="assistant-float"><img src="images/cat.jpg" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" /></div>
+
+  <!-- Chat dialog -->
+  <div class="assistant-chat" id="assistant-chat">
+    <div class="chat-header">
+      <span>小助教</span>
+      <button class="chat-close" id="chat-close">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-message assistant">你好！我是你的小助教，有什麼可以幫你的嗎？😊</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chat-input" placeholder="輸入訊息..." />
+      <button class="chat-send" id="chat-send">➤</button>
+    </div>
+  </div>
+
+  <script>
+    const avatar = document.getElementById('user-avatar');
+    const menu = document.getElementById('user-menu');
+    if (avatar && menu) {
+      avatar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => menu.classList.add('hidden'));
+      menu.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    // ── Theme switching ──
+    const themeItems = document.querySelectorAll('.theme-flyout .theme-item');
+    themeItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const theme = item.dataset.theme;
+        if (!theme) return;
+        document.documentElement.setAttribute('data-theme', theme);
+        themeItems.forEach(t => t.classList.remove('active-theme'));
+        item.classList.add('active-theme');
+      });
+    });
+
+    // ── Assistant mode ──
+    const assistantItems = document.querySelectorAll('.assistant-flyout .assistant-item');
+    const assistantFloat = document.getElementById('assistant-float');
+    const assistantChat = document.getElementById('assistant-chat');
+    const chatClose = document.getElementById('chat-close');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    const chatMessages = document.getElementById('chat-messages');
+
+    const icons = { off: '', robot: '🤖', cat: '<img src="images/cat.jpg" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" />', dog: '<img src="images/dog.webp" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" />' };
+    const labels = { off: '關閉', robot: '機器人', cat: '貓派', dog: '狗派' };
+    let currentMode = 'cat';
+
+    function setAssistantMode(mode) {
+      currentMode = mode;
+      assistantItems.forEach(item => item.classList.remove('active-assistant'));
+      const active = document.querySelector(`.assistant-item[data-mode="${mode}"]`);
+      if (active) active.classList.add('active-assistant');
+      if (mode === 'off') {
+        assistantFloat.classList.add('hidden');
+        assistantChat.classList.remove('open');
+      } else {
+        assistantFloat.classList.remove('hidden');
+        assistantFloat.innerHTML = icons[mode];
+      }
+    }
+
+    setAssistantMode('cat');
+
+    assistantItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setAssistantMode(item.dataset.mode);
+      });
+    });
+
+    assistantFloat.addEventListener('click', (e) => {
+      e.stopPropagation();
+      assistantChat.classList.toggle('open');
+    });
+
+    chatClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      assistantChat.classList.remove('open');
+    });
+
+    function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      chatMessages.innerHTML += `<div class="chat-message user">${text}</div>`;
+      chatInput.value = '';
+      setTimeout(() => {
+        chatMessages.innerHTML += `<div class="chat-message assistant">收到！我是${labels[currentMode]}模式的小助教。😊</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 500);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    chatSend.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+
+</body>
+</html>

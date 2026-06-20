@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GensparkLike — Project Status / 專案狀態</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0a0a0f; color: #e2e4e8; line-height: 1.6; min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .app { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.5rem 3rem; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    header h1 {
+      font-size: 1.2rem; font-weight: 700; color: #fff;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    header h1 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #0f7fff; }
+    header .ts { font-size: 0.78rem; color: #6b6f82; }
+
+    /* ── Status Bar (compact) ── */
+    .status-bar {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      padding: 0.6rem 0; margin-bottom: 1.5rem;
+      font-size: 0.8rem; color: #6b6f82;
+    }
+    .status-bar .sep { color: rgba(255,255,255,0.06); }
+    .status-bar .item { display: flex; align-items: center; gap: 0.4rem; }
+    .status-bar .item .val { color: #9ea1ad; font-weight: 500; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.15rem 0.5rem; border-radius: 999px;
+      font-size: 0.7rem; font-weight: 500;
+    }
+    .badge-progress { background: rgba(15,127,255,0.15); color: #60b0ff; }
+    .badge-archived { background: rgba(255,255,255,0.06); color: #6b6f82; }
+    .badge-pending  { background: rgba(255,255,255,0.04); color: #8b8fa3; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; gap: 0.25rem; flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 0;
+      margin-bottom: 1.5rem;
+    }
+    .tab {
+      padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 500;
+      color: #6b6f82; cursor: pointer; border: none; background: none;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.15s ease;
+      display: flex; align-items: center; gap: 0.35rem;
+      white-space: nowrap;
+    }
+    .tab:hover { color: #9ea1ad; background: rgba(255,255,255,0.03); }
+    .tab.active { color: #fff; background: rgba(255,255,255,0.05); }
+    .tab .count {
+      font-size: 0.65rem; padding: 0.1rem 0.4rem;
+      border-radius: 999px; background: rgba(255,255,255,0.06);
+      color: #6b6f82; font-weight: 400;
+    }
+
+    /* ── Tab Content ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .content-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 1.5rem 2rem;
+      min-height: 200px;
+    }
+    .content-card .loading { text-align: center; padding: 2rem; color: #6b6f82; font-size: 0.85rem; }
+
+    /* ── File Grid (inside proposal/tasks/design tabs) ── */
+    .file-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+    .file-card {
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 1rem 1.25rem;
+      transition: all 0.2s ease; cursor: default;
+    }
+    .file-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+    .file-card .top {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .file-card .name {
+      font-size: 0.85rem; font-weight: 600; color: #e2e4e8;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .file-card .mtime { font-size: 0.7rem; color: #6b6f82; flex-shrink: 0; }
+    .file-card .preview {
+      margin-top: 0.6rem; font-size: 0.8rem; color: #8b8fa3;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      overflow: hidden; line-height: 1.6;
+      border-left: 2px solid rgba(15,127,255,0.2); padding-left: 0.75rem;
+    }
+    .file-card .error { margin-top: 0.5rem; font-size: 0.75rem; color: #f87171; }
+
+    /* ── Markdown (inside specs/rules tabs) ── */
+    .md-body { font-size: 0.88rem; line-height: 1.7; }
+    .md-body h1, .md-body h2, .md-body h3, .md-body h4 { color: #fff; margin-top: 1.5em; margin-bottom: 0.5em; }
+    .md-body h2 { font-size: 1.15rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.4rem; }
+    .md-body h3 { font-size: 1rem; }
+    .md-body p { color: #9ea1ad; margin-bottom: 0.75em; }
+    .md-body code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82em;
+      background: rgba(255,255,255,0.06); padding: 0.15em 0.4em;
+      border-radius: 4px; color: #e2e4e8;
+    }
+    .md-body pre {
+      background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1em 0;
+    }
+    .md-body pre code { background: none; padding: 0; }
+    .md-body table {
+      width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.85rem;
+    }
+    .md-body th, .md-body td {
+      border: 1px solid rgba(255,255,255,0.08); padding: 0.5rem 0.75rem; text-align: left;
+    }
+    .md-body th { background: rgba(255,255,255,0.04); color: #e2e4e8; }
+    .md-body td { color: #9ea1ad; }
+    .md-body strong { color: #e2e4e8; }
+    .md-body hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 1.5em 0; }
+    .md-body li { color: #9ea1ad; margin-bottom: 0.3em; }
+
+    /* ── Site Map tree ── */
+    .tree-wrap {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 2.1;
+    }
+    .tree-wrap .node {
+      display: flex; align-items: center; gap: 0.5rem;
+      color: #9ea1ad; transition: color 0.15s ease;
+    }
+    .tree-wrap .node:hover { color: #e2e4e8; }
+    .tree-wrap .node .indent { display: inline-flex; flex-shrink: 0; }
+    .tree-wrap .node .indent span {
+      display: inline-block; width: 1.2em; text-align: center; color: rgba(255,255,255,0.08);
+    }
+    .tree-wrap .node .ico { width: 1.2em; text-align: center; flex-shrink: 0; }
+    .tree-wrap .node .nm { font-weight: 500; }
+    .tree-wrap .node .desc {
+      font-family: 'Inter', sans-serif; font-size: 0.72rem;
+      color: #6b6f82; margin-left: 0.5rem;
+    }
+    .tree-wrap .node.dir { color: #e2e4e8; font-weight: 600; }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #6b6f82; }
+    .empty-state .big { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 0.85rem; }
+
+    @media (max-width: 640px) {
+      .app { padding: 1rem; }
+      .tab { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
+      .content-card { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <h1><span class="dot"></span> GensparkLike / Project Status</h1>
+    <div class="ts" id="pageTime"></div>
+  </header>
+
+  <!-- Compact status bar / 狀態列 -->
+  <div class="status-bar" id="statusBar">
+    <span class="item">⚡ 目前 / Current: <span class="val">copy-genspark-ui</span></span>
+    <span class="sep">|</span>
+    <span class="badge badge-progress">🔄 In Progress</span>
+    <span class="sep">|</span>
+    <span class="item">📦 前次 / Previous: <span class="val">—</span></span>
+  </div>
+
+  <!-- Tabs / 頁籤 -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="proposal" role="tab">📋 proposal.md</button>
+    <button class="tab" data-tab="tasks" role="tab">✅ tasks.md</button>
+    <button class="tab" data-tab="specs" role="tab">📁 specs/ <span class="count" id="specsCount">2</span></button>
+    <button class="tab" data-tab="design" role="tab">🎨 design.md</button>
+    <button class="tab" data-tab="rules" role="tab">📐 規則 / Rules</button>
+    <button class="tab" data-tab="sitemap" role="tab">🗺️ 站點地圖 / Site&nbsp;Map</button>
+  </div>
+
+  <!-- Tab: proposal.md -->
+  <div class="tab-content active" id="tab-proposal" role="tabpanel">
+    <div class="content-card" id="proposalContent"><div class="loading">載入中 / Loading</div></div>
+  </div>
+
+  <!-- Tab: tasks.md -->
+  <div class="tab-content" id="tab-tasks" role="tabpanel">
+    <div class="content-card" id="tasksContent"><div class="loading">載入中 / Loading</div></div>
+  </div>
+
+  <!-- Tab: specs/ -->
+  <div class="tab-content" id="tab-specs" role="tabpanel">
+    <div class="content-card" id="specsContent"><div class="loading">載入中 / Loading</div></div>
+  </div>
+
+  <!-- Tab: design.md -->
+  <div class="tab-content" id="tab-design" role="tabpanel">
+    <div class="content-card" id="designContent"><div class="loading">載入中 / Loading</div></div>
+  </div>
+
+  <!-- Tab: Rules -->
+  <div class="tab-content" id="tab-rules" role="tabpanel">
+    <div class="content-card" id="rulesContent"><div class="loading">載入中 / Loading</div></div>
+  </div>
+
+  <!-- Tab: Site Map -->
+  <div class="tab-content" id="tab-sitemap" role="tabpanel">
+    <div class="content-card"><div class="tree-wrap" id="sitemapContent"><div class="loading">載入中 / Loading</div></div></div>
+  </div>
+</div>
+
+<!-- marked.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+/* ── Configuration ── */
+const CONFIG = {
+  currentChange: { name: 'copy-genspark-ui', created: '2026-06-19 20:00', status: 'in_progress' },
+  previousChange: null,
+  specs: ['rules.md', 'design.md']
+};
+
+/* ── Tab switching ── */
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById('tab-' + btn.dataset.tab);
+    if (panel) panel.classList.add('active');
+  });
+});
+
+/* ── Helpers ── */
+const FILE_META = {
+  'proposal.md': { icon: '📋', file: 'proposal.md' },
+  'tasks.md':    { icon: '✅', file: 'tasks.md' },
+  'design.md':   { icon: '🎨', file: 'design.md' },
+  'rules.md':    { icon: '📐', file: 'rules.md' },
+};
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatTime(d) { return d || '—'; }
+
+async function fetchMd(path) {
+  try {
+    const res = await fetch(path, { cache: 'no-store' });
+    if (!res.ok) return { ok: false, text: `HTTP ${res.status}`, mtime: null };
+    const text = await res.text();
+    const mtime = res.headers.get('Last-Modified') || null;
+    const preview = text.substring(0, 200).replace(/[#*`\[\]]/g, '').trim();
+    return { ok: true, text, mtime, preview };
+  } catch (e) {
+    return { ok: false, text: `Error: ${e.message}`, mtime: null };
+  }
+}
+
+function renderFileCard(fname, mtime, preview, error) {
+  const meta = FILE_META[fname] || { icon: '📄' };
+  return `<div class="file-card">
+    <div class="top">
+      <div class="name"><span>${meta.icon}</span>${escHtml(fname)}</div>
+      <div class="mtime">${mtime ? '📅 '+formatTime(mtime) : '📅 —'}</div>
+    </div>
+    ${error ? `<div class="error">⚠️ ${error}</div>` : `<div class="preview">${escHtml(preview)}</div>`}
+  </div>`;
+}
+
+/* ── Load single change file into a tab ── */
+async function loadChangeFile(tabId, containerId, fname) {
+  const container = document.getElementById(containerId);
+  const path = `../openspec/changes/${CONFIG.currentChange.name}/${fname}`;
+  const result = await fetchMd(path);
+  if (result.ok) {
+    container.innerHTML = renderFileCard(fname, result.mtime, result.preview, null);
+  } else {
+    container.innerHTML = renderFileCard(fname, null, null, result.text);
+  }
+}
+
+/* ── Load specs tab ── */
+async function loadSpecs() {
+  const container = document.getElementById('specsContent');
+  let html = '';
+  for (const spec of CONFIG.specs) {
+    const path = `../openspec/specs/${spec}`;
+    const result = await fetchMd(path);
+    if (result.ok) {
+      html += `<details style="margin-bottom:0.75rem;" ${spec === 'rules.md' ? 'open' : ''}>
+        <summary style="cursor:pointer;font-weight:600;color:#e2e4e8;font-size:0.85rem;padding:0.4rem 0;">
+          ${FILE_META[spec]?.icon||'📄'} ${spec}
+          <span style="font-weight:400;color:#6b6f82;font-size:0.75rem;margin-left:0.5rem;">
+            (${result.mtime ? formatTime(result.mtime) : '—'})
+          </span>
+        </summary>
+        <div class="md-body" style="padding-top:0.5rem;">${marked.parse(result.text)}</div>
+      </details>`;
+    } else {
+      html += `<div class="file-card"><div class="name">📄 ${spec}</div><div class="error">⚠️ ${result.text}</div></div>`;
+    }
+  }
+  container.innerHTML = html || '<div class="empty-state"><p>No specs / 無規格</p></div>';
+}
+
+/* ── Load rules tab ── */
+async function loadRules() {
+  const container = document.getElementById('rulesContent');
+  const path = '../openspec/specs/rules.md';
+  const result = await fetchMd(path);
+  if (result.ok) {
+    container.innerHTML = `<div class="md-body">${marked.parse(result.text)}</div>`;
+  } else {
+    container.innerHTML = `<div class="empty-state"><p>⚠️ ${result.text}</p></div>`;
+  }
+}
+
+/* ── Site Map tree data ── */
+const SITE_TREE = [
+  { type:'dir', name:'GensparkLike/', desc:'/', children: [
+    { type:'file', name:'index.html', desc:'← 首頁 Landing Page' },
+    { type:'dir', name:'assets/', desc:'/', children: [
+      { type:'dir', name:'css/', children: [
+        { type:'file', name:'style.css', desc:'← 設計系統' }
+      ]},
+      { type:'dir', name:'js/', children: [
+        { type:'file', name:'main.js', desc:'← 互動腳本' }
+      ]},
+      { type:'dir', name:'images/', desc:'/', children: [] }
+    ]},
+    { type:'dir', name:'status/', desc:'/', children: [
+      { type:'file', name:'index.html', desc:'← 專案 Dashboard' }
+    ]},
+    { type:'dir', name:'openspec/', desc:'/', children: [
+      { type:'dir', name:'specs/', desc:'/', children: [
+        { type:'file', name:'rules.md', desc:'← 11 條規則' },
+        { type:'file', name:'design.md', desc:'← 設計規格' }
+      ]},
+      { type:'dir', name:'changes/', desc:'/', children: [
+        { type:'dir', name:'copy-genspark-ui/', desc:'/', children: [
+          { type:'file', name:'proposal.md', desc:'← 變更提案' },
+          { type:'file', name:'design.md', desc:'← 設計文件' },
+          { type:'file', name:'tasks.md', desc:'← 任務清單' }
+        ]},
+        { type:'dir', name:'archive/', desc:'/', children: [] }
+      ]}
+    ]}
+  ]}
+];
+
+function renderTree(nodes, depth=0, prefix='') {
+  let html = '';
+  nodes.forEach((n, i) => {
+    const last = i === nodes.length - 1;
+    const conn = last ? '└──' : '├──';
+    const chPfx = prefix + (last ? '    ' : '│   ');
+    const ind = depth > 0 ? `<span class="indent">${prefix}${conn}</span>` : '';
+    const ico = n.type === 'dir' ? '📁' : '📄';
+    const cls = n.type === 'dir' ? 'node dir' : 'node';
+    const dsc = n.desc ? `<span class="desc">${escHtml(n.desc)}</span>` : '';
+    html += `<div class="${cls}">${ind}<span class="ico">${ico}</span><span class="nm">${escHtml(n.name)}</span>${dsc}</div>`;
+    if (n.children && n.children.length > 0) html += renderTree(n.children, depth+1, chPfx);
+  });
+  return html;
+}
+
+/* ── Init ── */
+async function init() {
+  document.getElementById('pageTime').textContent = `📅 ${new Date().toISOString().slice(0,16).replace('T',' ')}`;
+  document.getElementById('sitemapContent').innerHTML = renderTree(SITE_TREE);
+
+  // Load all tabs in parallel
+  await Promise.all([
+    loadChangeFile('proposal', 'proposalContent', 'proposal.md'),
+    loadChangeFile('tasks', 'tasksContent', 'tasks.md'),
+    loadChangeFile('design', 'designContent', 'design.md'),
+    loadSpecs(),
+    loadRules(),
+  ]);
+}
+
+init();
+</script>
+
+</body>
+</html>

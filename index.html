@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GensparkLike — Skill Exchange Platform / 技能交換平台</title>
+  <meta name="description" content="GensparkLike is your skill exchange platform. Connect, learn, and grow through skill swapping. / 技能交換平台，連結學習者與教學者，交換技能共同成長。" />
+
+  <!-- Fonts / 字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" />
+
+  <!-- Stylesheet / 主樣式表 -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L19.09 11.26L29 11.26L21 17.48L24.18 27L16 21.14L7.82 27L11 17.48L3 11.26L12.91 11.26Z' fill='%230f7fff'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <!-- ============================================================
+       NAVBAR / 導航列
+       ============================================================ -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation / 主導航">
+    <div class="container">
+      <!-- Logo -->
+      <a href="/" class="navbar-logo">
+        <span class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2L19.09 11.26L29 11.26L21 17.48L24.18 27L16 21.14L7.82 27L11 17.48L3 11.26L12.91 11.26Z" fill="#0f7fff"/>
+          </svg>
+        </span>
+        GensparkLike
+      </a>
+
+      <!-- Navigation links / 導航連結 -->
+      <div class="navbar-links">
+        <a href="#features">功能 / Features</a>
+        <a href="#categories">分類 / Categories</a>
+        <a href="#how-it-works">流程 / How It Works</a>
+      </div>
+
+      <!-- Actions -->
+      <div class="navbar-actions">
+        <a href="workspace/" class="btn btn-primary">開始探索 / Start Exploring</a>
+      </div>
+
+      <!-- Hamburger toggle / 漢堡選單按鈕 -->
+      <button class="navbar-toggle" aria-label="Toggle menu / 切換選單">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       HERO / 主視覺區
+       ============================================================ -->
+  <section class="hero" id="hero">
+    <!-- 背景裝飾 / Decorative elements -->
+    <div class="hero-glow"></div>
+    <div class="hero-glow-2"></div>
+    <div class="hero-stars">
+      <div class="hero-star"></div>
+      <div class="hero-star"></div>
+      <div class="hero-star"></div>
+      <div class="hero-star"></div>
+      <div class="hero-star"></div>
+      <div class="hero-star"></div>
+      <div class="hero-star"></div>
+      <div class="hero-star"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span>✦</span>
+        <span>Skill Exchange Platform v1.0 / 技能交換平台</span>
+      </div>
+
+      <h1 class="hero-title">
+        交換技能<br class="mobile-only" />
+        <span class="highlight">創造價值</span>
+        <br />
+        <span style="font-size: 0.7em; display: block; margin-top: 0.1em;">
+          Exchange Skills, <span class="highlight">Create Value</span>
+        </span>
+      </h1>
+
+      <p class="hero-subtitle">
+        連結擁有技能的你與渴望學習的他。<br />
+        不只是教學，而是雙向成長的社群。
+        <br class="mobile-only" />
+        Connect. Learn. Grow. — Your skill exchange community.
+      </p>
+
+      <div class="hero-actions">
+        <a href="workspace/" class="btn btn-primary btn-lg">開始探索 / Start Exploring</a>
+        <a href="#how-it-works" class="btn btn-secondary btn-lg">了解更多 / Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FEATURES / 特色功能 (淺色背景)
+       ============================================================ -->
+  <section class="section section-light" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">✦ Features / 功能特色</span>
+        <h2 class="section-title">為什麼選擇 GensparkLike？<br />Why Choose GensparkLike?</h2>
+        <p class="section-desc">
+          我們重新定義技能交換的方式 — 簡單、直接、有效。
+          / Redefining skill exchange — simple, direct, effective.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card fade-in">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <h3>智能配對 / Smart Matching</h3>
+          <p>
+            根據你的技能與學習目標，AI 智能推薦最合適的交換對象。
+            不再盲目搜尋，直接找到對的人。
+            / AI-powered matching connects you with the right skill partners.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card fade-in">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="9" y1="21" x2="9" y2="9" />
+            </svg>
+          </div>
+          <h3>作品展示 / Portfolio Showcase</h3>
+          <p>
+            每個人都擁有個人頁面，展示技能、作品與評價。
+            讓你的專業被看見，建立可信賴的交換關係。
+            / Showcase your skills, portfolio, and reputation.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card fade-in">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <h3>即時溝通 / Instant Messaging</h3>
+          <p>
+            內建即時聊天系統，討論交換細節、安排時間、分享資源。
+            無需切換其他通訊軟體。
+            / Built-in chat for seamless coordination.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card fade-in">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </div>
+          <h3>靈活交易 / Flexible Exchange</h3>
+          <p>
+            支援多種交換模式：技能交換、點數交易、訂閱制。
+            彈性配合你的需求，找到最舒適的交換方式。
+            / Multiple exchange models to fit your needs.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-card fade-in">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <h3>評價系統 / Rating System</h3>
+          <p>
+            每次交換完成後雙向互評，累積信譽分數。
+            透明的評價機制讓社群品質持續提升。
+            / Mutual ratings build a trustworthy community.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-card fade-in">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <h3>社群成長 / Community Growth</h3>
+          <p>
+            加入技能交換社團、參與線上工作坊、建立你的學習網絡。
+            不只是交換技能，更是擴展人脈。
+            / Join groups, attend workshops, and grow your network.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CATEGORIES / 技能分類 (深色背景)
+       ============================================================ -->
+  <section class="section section-dark" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">✦ Categories / 技能分類</span>
+        <h2 class="section-title">探索技能 / Explore Skills</h2>
+        <p class="section-desc">
+          從程式開發到料理烹飪，數十種技能分類等你來交換。
+          / From coding to cooking, dozens of categories to explore.
+        </p>
+      </div>
+
+      <div class="categories-grid">
+        <div class="category-tag">
+          <span class="tag-icon">💻</span>
+          程式開發 / Programming
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🎨</span>
+          設計創作 / Design
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🌐</span>
+          語言學習 / Languages
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🎵</span>
+          音樂製作 / Music
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">📸</span>
+          攝影剪輯 / Photography
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🏃</span>
+          運動健身 / Fitness
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🍳</span>
+          料理烹飪 / Cooking
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">📊</span>
+          商業行銷 / Business
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🧠</span>
+          心理諮詢 / Counseling
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🎮</span>
+          遊戲開發 / Game Dev
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">✍️</span>
+          寫作翻譯 / Writing
+        </div>
+        <div class="category-tag">
+          <span class="tag-icon">🔧</span>
+          更多分類 / More +
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       HOW IT WORKS / 運作流程 (淺色背景)
+       ============================================================ -->
+  <section class="section section-light" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">✦ How It Works / 運作方式</span>
+        <h2 class="section-title">三步驟開始交換 / Start in 3 Steps</h2>
+        <p class="section-desc">
+          簡單三步，開始你的技能交換之旅。
+          / Three simple steps to start exchanging skills.
+        </p>
+      </div>
+
+      <div class="steps-grid">
+        <!-- Step 1 -->
+        <div class="step-card fade-in">
+          <div class="step-number">1</div>
+          <h3>註冊個人檔案 / Create Profile</h3>
+          <p>
+            註冊帳號，填寫你的技能清單與學習目標。
+            讓社群認識你的專長。
+            / Sign up and list your skills and learning goals.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card fade-in">
+          <div class="step-number">2</div>
+          <h3>尋找交換夥伴 / Find Partners</h3>
+          <p>
+            瀏覽技能分類或透過智能推薦，找到與你互補的交換對象。
+            / Browse categories or get smart matches for complementary skills.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card fade-in">
+          <div class="step-number">3</div>
+          <h3>開始交換 / Start Exchanging</h3>
+          <p>
+            發送邀請、安排時間、開始教學與學習。
+            交換完成後互相評價，建立信譽。
+            / Send invites, schedule sessions, teach and learn. Rate after each exchange.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CTA BANNER / 行動呼籲 (深色背景)
+       ============================================================ -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="cta-banner fade-in">
+        <h2>準備好開始交換了嗎？<br />Ready to Start Exchanging?</h2>
+        <p>
+          加入 GensparkLike，成為技能交換社群的一份子。
+          你的技能，就是別人的寶藏。
+          / Join GensparkLike today. Your skill is someone's treasure.
+        </p>
+        <a href="#" class="btn btn-primary btn-lg">立即加入 / Join Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER / 頁尾
+       ============================================================ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand -->
+        <div class="footer-brand">
+          <a href="/" class="navbar-logo" style="margin-bottom: var(--space-4);">
+            <span class="logo-icon">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 2L19.09 11.26L29 11.26L21 17.48L24.18 27L16 21.14L7.82 27L11 17.48L3 11.26L12.91 11.26Z" fill="#0f7fff"/>
+              </svg>
+            </span>
+            GensparkLike
+          </a>
+          <p>
+            技能交換平台 — 連結學習者與教學者，讓知識自由流動。
+            / A skill exchange platform connecting learners and teachers.
+          </p>
+        </div>
+
+        <!-- Column 1: Platform -->
+        <div class="footer-col">
+          <h4>平台 / Platform</h4>
+          <a href="#features">功能 / Features</a>
+          <a href="#categories">分類 / Categories</a>
+          <a href="#how-it-works">流程 / How It Works</a>
+          <a href="#">定價 / Pricing</a>
+        </div>
+
+        <!-- Column 2: Community -->
+        <div class="footer-col">
+          <h4>社群 / Community</h4>
+          <a href="#">部落格 / Blog</a>
+          <a href="#">教學者計畫 / Teacher Program</a>
+          <a href="#">社群規範 / Guidelines</a>
+          <a href="#">幫助中心 / Help Center</a>
+        </div>
+
+        <!-- Column 3: Company -->
+        <div class="footer-col">
+          <h4>公司 / Company</h4>
+          <a href="#">關於我們 / About</a>
+          <a href="#">隱私政策 / Privacy</a>
+          <a href="#">服務條款 / Terms</a>
+          <a href="#">聯絡我們 / Contact</a>
+        </div>
+      </div>
+
+      <!-- Bottom bar / 底部 -->
+      <div class="footer-bottom">
+        <span>© 2026 GensparkLike. All rights reserved.</span>
+
+        <div style="display: flex; align-items: center; gap: var(--space-4);">
+          <div class="footer-lang">
+            <span>🌐</span>
+            <span>繁體中文 / English</span>
+          </div>
+
+          <div class="footer-social">
+            <a href="#" aria-label="Twitter / X">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="GitHub">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="Discord">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating theme button -->
+  <div class="theme-floating-btn" id="themeFloatingBtn" aria-label="切換主題 / Switch Theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"/>
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+    </svg>
+  </div>
+
+  <!-- Theme picker panel -->
+  <div class="theme-picker" id="themePicker">
+    <div class="theme-picker-header">
+      <span>主題 / Themes</span>
+      <button class="theme-picker-close" id="themePickerClose">&times;</button>
+    </div>
+    <div class="theme-picker-grid" id="themePickerGrid">
+      <div class="theme-picker-item active-theme" data-theme="default"><span class="theme-picker-swatch" style="background:#3b82f6;"></span> Default</div>
+      <div class="theme-picker-item" data-theme="slate"><span class="theme-picker-swatch" style="background:#a1a1aa;"></span> Slate</div>
+      <div class="theme-picker-item" data-theme="carbon"><span class="theme-picker-swatch" style="background:#fafafa;"></span> Carbon</div>
+      <div class="theme-picker-item" data-theme="forest"><span class="theme-picker-swatch" style="background:#4ade80;"></span> Forest</div>
+      <div class="theme-picker-item" data-theme="ocean"><span class="theme-picker-swatch" style="background:#38bdf8;"></span> Ocean</div>
+      <div class="theme-picker-item" data-theme="pine"><span class="theme-picker-swatch" style="background:#d97706;"></span> Pine</div>
+      <div class="theme-picker-item" data-theme="moss"><span class="theme-picker-swatch" style="background:#84cc16;"></span> Moss</div>
+      <div class="theme-picker-item" data-theme="sunset"><span class="theme-picker-swatch" style="background:#ff7b4a;"></span> Sunset</div>
+      <div class="theme-picker-item" data-theme="ember"><span class="theme-picker-swatch" style="background:#ef4444;"></span> Ember</div>
+      <div class="theme-picker-item" data-theme="amber"><span class="theme-picker-swatch" style="background:#f59e0b;"></span> Amber</div>
+      <div class="theme-picker-item" data-theme="rose"><span class="theme-picker-swatch" style="background:#f472b6;"></span> Rose</div>
+      <div class="theme-picker-item" data-theme="violet"><span class="theme-picker-swatch" style="background:#a78bfa;"></span> Violet</div>
+      <div class="theme-picker-item" data-theme="sapphire"><span class="theme-picker-swatch" style="background:#60a5fa;"></span> Sapphire</div>
+      <div class="theme-picker-item" data-theme="teal"><span class="theme-picker-swatch" style="background:#2dd4bf;"></span> Teal</div>
+      <div class="theme-picker-item" data-theme="frost"><span class="theme-picker-swatch" style="background:#7dd3fc;"></span> Frost</div>
+      <div class="theme-picker-item" data-theme="midnight"><span class="theme-picker-swatch" style="background:#c084fc;"></span> Midnight</div>
+      <div class="theme-picker-item" data-theme="cinnamor"><span class="theme-picker-swatch" style="background:#fb923c;"></span> Cinnamor</div>
+      <div class="theme-picker-item" data-theme="abyss"><span class="theme-picker-swatch" style="background:#22c55e;"></span> Abyss</div>
+      <div class="theme-picker-item" data-theme="royal"><span class="theme-picker-swatch" style="background:#fbbf24;"></span> Royal</div>
+      <div class="theme-picker-item" data-theme="blood"><span class="theme-picker-swatch" style="background:#dc2626;"></span> Blood</div>
+      <div class="theme-picker-item" data-theme="steel"><span class="theme-picker-swatch" style="background:#64748b;"></span> Steel</div>
+      <div class="theme-picker-item" data-theme="cherry"><span class="theme-picker-swatch" style="background:#fb7185;"></span> Cherry</div>
+      <div class="theme-picker-item" data-theme="ink"><span class="theme-picker-swatch" style="background:#f5d742;"></span> Ink</div>
+      <div class="theme-picker-item" data-theme="shadow"><span class="theme-picker-swatch" style="background:#cbd5e1;"></span> Shadow</div>
+      <div class="theme-picker-item" data-theme="lavender"><span class="theme-picker-swatch" style="background:#c4b5fd;"></span> Lavender</div>
+      <div class="theme-picker-item" data-theme="cedar"><span class="theme-picker-swatch" style="background:#b8860b;"></span> Cedar</div>
+      <div class="theme-picker-item" data-theme="storm"><span class="theme-picker-swatch" style="background:#facc15;"></span> Storm</div>
+      <div class="theme-picker-item" data-theme="copper"><span class="theme-picker-swatch" style="background:#c2410c;"></span> Copper</div>
+      <div class="theme-picker-item" data-theme="neon"><span class="theme-picker-swatch" style="background:#22d3ee;"></span> Neon</div>
+      <div class="theme-picker-item" data-theme="dusk"><span class="theme-picker-swatch" style="background:#818cf8;"></span> Dusk</div>
+    </div>
+  </div>
+
+  <script>
+    /* ── Theme picker ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeBtn = document.getElementById('themeFloatingBtn');
+      const themePicker = document.getElementById('themePicker');
+      const themePickerClose = document.getElementById('themePickerClose');
+      const themeItems = document.querySelectorAll('.theme-picker-item');
+
+      if (themeBtn && themePicker) {
+        themeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          themePicker.classList.toggle('open');
+        });
+
+        if (themePickerClose) {
+          themePickerClose.addEventListener('click', () => {
+            themePicker.classList.remove('open');
+          });
+        }
+
+        document.addEventListener('click', (e) => {
+          if (!themePicker.contains(e.target) && e.target !== themeBtn) {
+            themePicker.classList.remove('open');
+          }
+        });
+      }
+
+      themeItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const theme = item.dataset.theme;
+          if (!theme) return;
+
+          if (theme === 'default') {
+            document.documentElement.removeAttribute('data-theme');
+          } else {
+            document.documentElement.setAttribute('data-theme', theme);
+          }
+
+          themeItems.forEach(t => t.classList.remove('active-theme'));
+          item.classList.add('active-theme');
+          themePicker.classList.remove('open');
+        });
+      });
+    });
+  </script>
+
+  <!-- JavaScript -->
+  <script src="assets/js/main.js"></script>
+
+</body>
+</html>
