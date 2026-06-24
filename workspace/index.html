@@ -606,52 +606,133 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      width: 480px;
-      max-width: 90vw;
+      width: 680px;
+      max-width: 92vw;
       max-height: 80vh;
-      overflow-y: auto;
+      display: flex;
+      overflow: hidden;
       box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-      padding: 28px 32px;
     }
-    .settings-header {
+    .settings-sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.15);
+    }
+    .settings-sidebar-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
+      padding: 0 16px 16px;
       border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
     }
-    .settings-header h2 {
-      font-size: 20px;
+    .settings-sidebar-header h2 {
+      font-size: 16px;
       font-weight: 600;
+      color: var(--text);
+    }
+    .settings-sidebar-close {
+      background: none; border: none;
+      color: var(--text-muted); cursor: pointer;
+      font-size: 18px; padding: 2px;
+      transition: color 0.15s ease;
+    }
+    .settings-sidebar-close:hover { color: var(--text); }
+    .settings-nav-group { margin-bottom: 4px; }
+    .settings-nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 8px 16px 4px;
+    }
+    .settings-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.1s ease;
+      border-left: 2px solid transparent;
+    }
+    .settings-nav-item:hover {
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+    }
+    .settings-nav-item.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border-left-color: var(--accent);
+    }
+    .settings-nav-item .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+    .settings-nav-sub {
+      padding-left: 8px;
+    }
+    .settings-nav-sub .settings-nav-item {
+      font-size: 12px;
+      padding: 6px 16px 6px 36px;
+      border-left: none;
+      color: var(--text-muted);
+    }
+    .settings-nav-sub .settings-nav-item.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+    }
+    .settings-content {
+      flex: 1;
+      padding: 28px 32px;
+      overflow-y: auto;
+      min-width: 0;
+    }
+    .settings-content-section { display: none; }
+    .settings-content-section.active { display: block; }
+    .settings-content-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .settings-field {
+      margin-bottom: 20px;
+    }
+    .settings-field:last-child { margin-bottom: 0; }
+    .settings-field-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .settings-field-value {
+      font-size: 14px;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .settings-close {
-      background: none; border: none;
-      color: var(--text-muted); cursor: pointer;
-      font-size: 20px; padding: 4px;
-      transition: color 0.15s ease;
+    .settings-field-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
     }
-    .settings-close:hover { color: var(--text); }
-    .settings-section {
-      margin-bottom: 28px;
-    }
-    .settings-section:last-child { margin-bottom: 0; }
-    .settings-section-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .settings-field-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
     }
     .settings-theme-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
     }
     .settings-theme-item {
@@ -659,7 +740,7 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      padding: 10px 8px;
+      padding: 10px 6px;
       border-radius: 10px;
       border: 1px solid var(--border);
       cursor: pointer;
@@ -675,14 +756,14 @@
       background: rgba(255,255,255,0.04);
     }
     .settings-theme-swatch {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       border: 1px solid rgba(255,255,255,0.1);
       flex-shrink: 0;
     }
     .settings-theme-name {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-secondary);
       text-align: center;
       line-height: 1.2;
@@ -692,7 +773,7 @@
     }
     .settings-assistant-options {
       display: flex;
-      gap: 10px;
+      gap: 12px;
     }
     .settings-assistant-item {
       flex: 1;
@@ -719,7 +800,7 @@
       color: var(--text);
     }
     .settings-assistant-icon {
-      font-size: 32px;
+      font-size: 28px;
     }
 
     /* ── Floating assistant icon ── */
@@ -1019,18 +1100,14 @@
   <!-- Settings Modal -->
   <div class="settings-overlay" id="settings-overlay">
     <div class="settings-panel">
-      <div class="settings-header">
-        <h2>⚙️ 設置 / Settings</h2>
-        <button class="settings-close" id="settings-close">✕</button>
+      <div class="settings-sidebar">
+        <div class="settings-sidebar-header">
+          <h2>⚙️ 設置</h2>
+          <button class="settings-sidebar-close" id="settings-close">✕</button>
+        </div>
+        <div class="settings-nav" id="settings-nav"></div>
       </div>
-      <div class="settings-section">
-        <div class="settings-section-title">🎨 主題 / Theme</div>
-        <div class="settings-theme-grid" id="settings-theme-grid"></div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-section-title">🤖 小助教設定 / Assistant</div>
-        <div class="settings-assistant-options" id="settings-assistant-options"></div>
-      </div>
+      <div class="settings-content" id="settings-content"></div>
     </div>
   </div>
 
@@ -1068,8 +1145,8 @@
     const settingsOverlay = document.getElementById('settings-overlay');
     const settingsClose = document.getElementById('settings-close');
     const menuSettings = document.getElementById('menu-settings');
-    const settingsThemeGrid = document.getElementById('settings-theme-grid');
-    const settingsAssistantOptions = document.getElementById('settings-assistant-options');
+    const settingsNav = document.getElementById('settings-nav');
+    const settingsContent = document.getElementById('settings-content');
 
     const ALL_THEMES = [
       { id:'default', name:'Default', swatch:'#3b82f6' },
@@ -1104,9 +1181,41 @@
       { id:'dusk', name:'Dusk', swatch:'#818cf8' },
     ];
 
+    const SETTINGS_SECTIONS = {
+      general: {
+        icon: '⚙️', label: '一般',
+        subs: [
+          { id: 'language', icon: '🌐', label: '語言' },
+        ]
+      },
+      profile: {
+        icon: '👤', label: '個人檔案',
+        subs: [
+          { id: 'avatar', icon: '🖼️', label: '頭像' },
+          { id: 'name', icon: '✏️', label: '全名' },
+        ]
+      },
+      personalization: {
+        icon: '🎨', label: '個人化',
+        subs: [
+          { id: 'theme', icon: '🎨', label: '主題' },
+        ]
+      },
+      connectors: { icon: '🔌', label: '連接器' },
+      data: { icon: '📊', label: '資料控制' },
+      meeting: { icon: '🎙️', label: 'AI 會議記錄' },
+      apikeys: { icon: '🔑', label: 'API 金鑰' },
+      billing: { icon: '💳', label: '帳單' },
+      account: {
+        icon: '🏠', label: '帳戶',
+        subs: [
+          { id: 'assistant', icon: '🤖', label: '小助教設定' },
+        ]
+      },
+    };
+
     function openSettings() {
-      renderSettingsThemes();
-      renderSettingsAssistant();
+      renderSettings();
       settingsOverlay.classList.add('open');
     }
 
@@ -1114,44 +1223,228 @@
       settingsOverlay.classList.remove('open');
     }
 
-    function renderSettingsThemes() {
+    function renderSettings() {
+      // Render nav
+      let navHtml = '';
+      Object.entries(SETTINGS_SECTIONS).forEach(([id, sec]) => {
+        navHtml += `<div class="settings-nav-group">`;
+        navHtml += `<div class="settings-nav-item" data-section="${id}" data-depth="0">
+          <span class="nav-icon">${sec.icon}</span> ${sec.label}
+        </div>`;
+        if (sec.subs) {
+          navHtml += `<div class="settings-nav-sub">`;
+          sec.subs.forEach(sub => {
+            navHtml += `<div class="settings-nav-item" data-section="${id}" data-sub="${sub.id}" data-depth="1">
+              <span class="nav-icon">${sub.icon}</span> ${sub.label}
+            </div>`;
+          });
+          navHtml += `</div>`;
+        }
+        navHtml += `</div>`;
+      });
+      settingsNav.innerHTML = navHtml;
+
+      // Render content sections
+      let contentHtml = '';
+
+      // — General / 一般 —
+      contentHtml += `<div class="settings-content-section" data-section="general">
+        <div class="settings-content-title">⚙️ 一般</div>
+        <div class="settings-field">
+          <div class="settings-field-label">🌐 顯示語言 / Display Language</div>
+          <div class="settings-field-value">繁體中文</div>
+        </div>
+      </div>`;
+
+      // — Language sub —
+      contentHtml += `<div class="settings-content-section" data-section="general" data-sub="language">
+        <div class="settings-content-title">🌐 語言 / Language</div>
+        <div class="settings-field">
+          <div class="settings-field-label">顯示語言 / Display Language</div>
+          <div class="settings-field-value">繁體中文</div>
+        </div>
+      </div>`;
+
+      // — Profile / 個人檔案 —
+      contentHtml += `<div class="settings-content-section" data-section="profile">
+        <div class="settings-content-title">👤 個人檔案 / Profile</div>
+        <div class="settings-field">
+          <div class="settings-field-label">🖼️ 頭像 / Avatar</div>
+          <div class="settings-field-value"><img class="settings-field-avatar" src="images/cat.jpg" /> 北極熊</div>
+        </div>
+        <div class="settings-field-divider"></div>
+        <div class="settings-field">
+          <div class="settings-field-label">✏️ 全名 / Full Name</div>
+          <div class="settings-field-value">Jason Hong</div>
+        </div>
+      </div>`;
+
+      // — Avatar sub —
+      contentHtml += `<div class="settings-content-section" data-section="profile" data-sub="avatar">
+        <div class="settings-content-title">🖼️ 頭像 / Avatar</div>
+        <div class="settings-field">
+          <div class="settings-field-value"><img class="settings-field-avatar" src="images/cat.jpg" /> 北極熊</div>
+        </div>
+      </div>`;
+
+      // — Name sub —
+      contentHtml += `<div class="settings-content-section" data-section="profile" data-sub="name">
+        <div class="settings-content-title">✏️ 全名 / Full Name</div>
+        <div class="settings-field">
+          <div class="settings-field-label">目前設定 / Current</div>
+          <div class="settings-field-value">Jason Hong</div>
+        </div>
+      </div>`;
+
+      // — Personalization / 個人化 —
+      contentHtml += `<div class="settings-content-section" data-section="personalization">
+        <div class="settings-content-title">🎨 個人化 / Personalization</div>
+        <div class="settings-field">
+          <div class="settings-field-label">🎨 主題 / Theme</div>
+          <div class="settings-theme-grid" id="settings-theme-grid"></div>
+        </div>
+      </div>`;
+
+      // — Theme sub —
+      contentHtml += `<div class="settings-content-section" data-section="personalization" data-sub="theme">
+        <div class="settings-content-title">🎨 主題 / Theme</div>
+        <div class="settings-theme-grid" id="settings-theme-grid-sub"></div>
+      </div>`;
+
+      // — Connectors —
+      contentHtml += `<div class="settings-content-section" data-section="connectors">
+        <div class="settings-content-title">🔌 連接器 / Connectors</div>
+        <div class="settings-field"><div class="settings-field-value" style="color:var(--text-muted);">暫無連接器 / No connectors</div></div>
+      </div>`;
+
+      // — Data —
+      contentHtml += `<div class="settings-content-section" data-section="data">
+        <div class="settings-content-title">📊 資料控制 / Data Control</div>
+        <div class="settings-field"><div class="settings-field-value" style="color:var(--text-muted);">暫無資料 / No data</div></div>
+      </div>`;
+
+      // — Meeting —
+      contentHtml += `<div class="settings-content-section" data-section="meeting">
+        <div class="settings-content-title">🎙️ AI 會議記錄 / AI Meeting Notes</div>
+        <div class="settings-field"><div class="settings-field-value" style="color:var(--text-muted);">尚未設定 / Not configured</div></div>
+      </div>`;
+
+      // — API Keys —
+      contentHtml += `<div class="settings-content-section" data-section="apikeys">
+        <div class="settings-content-title">🔑 API 金鑰 / API Keys</div>
+        <div class="settings-field"><div class="settings-field-value" style="color:var(--text-muted);">尚未新增 / No keys added</div></div>
+      </div>`;
+
+      // — Billing —
+      contentHtml += `<div class="settings-content-section" data-section="billing">
+        <div class="settings-content-title">💳 帳單 / Billing</div>
+        <div class="settings-field"><div class="settings-field-value" style="color:var(--text-muted);">無帳單記錄 / No billing history</div></div>
+      </div>`;
+
+      // — Account / 帳戶 —
+      contentHtml += `<div class="settings-content-section" data-section="account">
+        <div class="settings-content-title">🏠 帳戶 / Account</div>
+        <div class="settings-field">
+          <div class="settings-field-label">🤖 小助教設定 / Assistant</div>
+          <div class="settings-assistant-options" id="settings-assistant-options"></div>
+        </div>
+      </div>`;
+
+      // — Assistant sub —
+      contentHtml += `<div class="settings-content-section" data-section="account" data-sub="assistant">
+        <div class="settings-content-title">🤖 小助教設定 / Assistant</div>
+        <div class="settings-assistant-options" id="settings-assistant-options-sub"></div>
+      </div>`;
+
+      settingsContent.innerHTML = contentHtml;
+
+      // Nav click handlers
+      settingsNav.querySelectorAll('.settings-nav-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const section = el.dataset.section;
+          const sub = el.dataset.sub || null;
+          navToSettings(section, sub);
+        });
+      });
+
+      // Default: show general
+      navToSettings('general', null);
+
+      // Init theme grids
+      initThemeGrid(document.getElementById('settings-theme-grid'));
+      initThemeGrid(document.getElementById('settings-theme-grid-sub'));
+      initAssistantOptions(document.getElementById('settings-assistant-options'));
+      initAssistantOptions(document.getElementById('settings-assistant-options-sub'));
+    }
+
+    function navToSettings(section, sub) {
+      // Update nav active
+      settingsNav.querySelectorAll('.settings-nav-item').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === section && (el.dataset.sub || null) === (sub || null)) {
+          el.classList.add('active');
+        }
+        // Also highlight parent when sub is active
+        if (sub && el.dataset.section === section && !el.dataset.sub && el.dataset.depth === '0') {
+          el.classList.add('active');
+        }
+      });
+
+      // Show correct content
+      settingsContent.querySelectorAll('.settings-content-section').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === section && (el.dataset.sub || null) === (sub || null)) {
+          el.classList.add('active');
+        }
+        // If no sub specified, show the section overview (the one without data-sub)
+        if (!sub && el.dataset.section === section && !el.dataset.sub) {
+          el.classList.add('active');
+        }
+      });
+    }
+
+    function initThemeGrid(container) {
+      if (!container) return;
       const current = document.documentElement.getAttribute('data-theme') || 'default';
-      settingsThemeGrid.innerHTML = ALL_THEMES.map(t =>
+      container.innerHTML = ALL_THEMES.map(t =>
         `<div class="settings-theme-item${t.id === current ? ' active-theme' : ''}" data-theme="${t.id}">
           <div class="settings-theme-swatch" style="background:${t.swatch}"></div>
           <div class="settings-theme-name">${t.name}</div>
         </div>`
       ).join('');
-      settingsThemeGrid.querySelectorAll('.settings-theme-item').forEach(el => {
+      container.querySelectorAll('.settings-theme-item').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           const theme = el.dataset.theme;
           document.documentElement.setAttribute('data-theme', theme);
-          settingsThemeGrid.querySelectorAll('.settings-theme-item').forEach(t => t.classList.remove('active-theme'));
-          el.classList.add('active-theme');
+          // Sync both grids
+          document.querySelectorAll('.settings-theme-item').forEach(t => t.classList.remove('active-theme'));
+          document.querySelectorAll(`.settings-theme-item[data-theme="${theme}"]`).forEach(t => t.classList.add('active-theme'));
         });
       });
     }
 
-    function renderSettingsAssistant() {
+    function initAssistantOptions(container) {
+      if (!container) return;
       const modes = [
         { mode:'off', icon:'💤', label:'關閉' },
         { mode:'robot', icon:'🤖', label:'機器人' },
         { mode:'cat', icon:'😺', label:'貓派' },
         { mode:'dog', icon:'🐶', label:'狗派' },
       ];
-      settingsAssistantOptions.innerHTML = modes.map(m =>
+      container.innerHTML = modes.map(m =>
         `<div class="settings-assistant-item${m.mode === currentMode ? ' active' : ''}" data-mode="${m.mode}">
           <div class="settings-assistant-icon">${m.icon}</div>
           <div>${m.label}</div>
         </div>`
       ).join('');
-      settingsAssistantOptions.querySelectorAll('.settings-assistant-item').forEach(el => {
+      container.querySelectorAll('.settings-assistant-item').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           setAssistantMode(el.dataset.mode);
-          settingsAssistantOptions.querySelectorAll('.settings-assistant-item').forEach(i => i.classList.remove('active'));
-          el.classList.add('active');
+          document.querySelectorAll('.settings-assistant-item').forEach(i => i.classList.remove('active'));
+          document.querySelectorAll(`.settings-assistant-item[data-mode="${el.dataset.mode}"]`).forEach(i => i.classList.add('active'));
         });
       });
     }
