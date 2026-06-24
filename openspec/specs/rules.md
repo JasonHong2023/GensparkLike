@@ -257,15 +257,18 @@ npx vite                        # 預設 5173，禁止
 
 ```
 GensparkLike/
-├── index.html                 ← 首頁 Landing Page
-├── assets/
-│   ├── css/style.css
-│   └── js/main.js
+├── index.html                 ← 首頁 Landing Page (自含式，CSS 內聯)
 ├── status/
-│   └── index.html             ← 專案 Dashboard
+│   └── index.html             ← 專案 Dashboard (六項同步)
+├── workspace/
+│   └── index.html             ← 工作空間頁面
 └── openspec/
     ├── specs/                 ← 規格文件
-    └── changes/               ← 變更記錄
+    │   ├── rules.md           ← 13 項專案規則
+    │   └── design.md          ← 設計系統
+    ├── changes/
+    │   └── archive/           ← 已歸檔變更記錄
+    └── references/            ← 參考資料
 ```
 
 **流程圖 / Flow Chart** — 以流程圖顯示程式邏輯或架構（API 路由、資料流、狀態機等）
