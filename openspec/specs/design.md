@@ -49,4 +49,58 @@ Text Muted:    #94a3b8
 |---|---|---|---|
 | 首頁 Landing Page | `/index.html` | ✅ 完成 | 瀏覽器開啟，8 區塊正常顯示 |
 | 專案 Dashboard | `/status/index.html` | 🔄 進行中 | 六項文件同步自動載入 |
-| 工作空間 | `/workspace/index.html` | 🟡 待改造 | 標題更新為 PM EVO，版面待全面改造 |
+| 工作空間 | `/workspace/index.html` | 🔄 進行中 | 應用領域頁面切換、3D 知識圖譜 |
+
+---
+
+## 應用領域頁面 / Domain Pages
+
+### 頁面切換機制
+
+左側導航欄點擊應用領域 → 右側主內容區切換顯示對應領域頁面。
+點擊「首頁」或「新增」→ 回到工具網格主頁面。
+
+### 領域頁面標籤結構
+
+每個應用領域包含 5 個標籤：
+
+| 標籤 / Tab | 功能 / Function |
+|---|---|
+| 📌 總覽 | 統計卡片、推薦模板、領域知識 |
+| 🔄 工作流 | 該領域的工作流程卡片 |
+| ⭐ 技能 | 技能等級和進度卡片 |
+| 🧠 知識圖譜 | 3D 互動式知識網絡圖（Three.js） |
+| ✏️ 知識圖譜編輯 | 新增和修改知識節點 |
+
+### 3D 知識圖譜設計 / 3D Knowledge Graph Design
+
+使用 **Three.js + WebGL** 建立的 3D 互動式知識圖譜。
+
+**視覺特徵：**
+
+| 元素 / Element | 實現方式 / Implementation |
+|---|---|
+| 背景 | 深色太空（#050510）+ FogExp2 霧效果 |
+| 星空 | 2000 個 PointsMaterial 隨機粒子 |
+| 節點 | MeshPhongMaterial 發光球體 + 外層光暈 |
+| 標籤 | CanvasTexture 轉 Sprite，懸浮於節點上方 |
+| 連線 | LineBasicMaterial 半透明線段 |
+| 光源 | AmbientLight + 2 個 PointLight（脈動效果） |
+
+**互動操作：**
+
+| 操作 / Action | 實現方式 / Implementation |
+|---|---|
+| 拖拉旋轉 | OrbitControls + damping |
+| 滾輪縮放 | OrbitControls zoom |
+| 點擊節點 | Raycaster 射線偵測 → 彈出詳情模態框 |
+| 自動旋轉 | autoRotate（可開關） |
+| 節點飄動 | requestAnimationFrame + sin/cos 偏移 |
+
+**節點配色：**
+
+| 層級 / Level | 顏色 / Color | 大小 / Size |
+|---|---|---|
+| 中心節點 | #3b82f6（藍） | 12 |
+| 主要類別 | #60a5fa / #38bdf8 / #818cf8 / #34d399 | 8 |
+| 子節點 | #93c5fd / #7dd3fc / #a5b4fc / #6ee7b7 | 5 |

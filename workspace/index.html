@@ -7,6 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- 3D Knowledge Graph — Three.js + OrbitControls -->
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { height: 100%; }
@@ -471,7 +474,7 @@
       position: absolute;
       top: 24px;
       right: 24px;
-      display: flex;
+      display: none;
       gap: 12px;
       z-index: 20;
     }
@@ -607,6 +610,8 @@
       display: flex;
       gap: 24px;
       justify-content: center;
+      padding: 40px 20px;
+      width: 100%;
     }
     .tool-category {
       display: flex;
@@ -1052,10 +1057,561 @@
     }
     .chat-send:hover { background: var(--accent-hover); }
 
+    /* ═══════════════════════════════════════════
+       PM DOMAIN PAGE STYLES
+       ═══════════════════════════════════════════ */
+    .domain-page {
+      display: none;
+      overflow-y: auto;
+      width: 100%;
+      padding: 40px 20px;
+      animation: fadeIn 0.3s ease;
+      justify-content: flex-start;
+    }
+    .domain-page.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .domain-page.hidden { display: none; }
+
+    .domain-header {
+      margin-bottom: 48px;
+    }
+    .domain-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .domain-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .domain-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .stat-icon {
+      font-size: 28px;
+    }
+
+    .domain-section {
+      margin-bottom: 48px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .template-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .template-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .template-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .template-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .template-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      flex: 1;
+    }
+    .template-rating {
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .template-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .template-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.02);
+    }
+
+    .knowledge-items {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .knowledge-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+    }
+    .knowledge-card summary {
+      font-weight: 600;
+      color: var(--text);
+      padding: 8px 0;
+      user-select: none;
+    }
+    .knowledge-card summary:hover {
+      color: var(--accent);
+    }
+    .knowledge-content {
+      padding: 16px 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .knowledge-content p {
+      margin-bottom: 8px;
+    }
+
+    .domain-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 48px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+    }
+    .action-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .action-btn.primary {
+      background: var(--accent);
+      color: white;
+    }
+    .action-btn.primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+    .action-btn.secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .action-btn.secondary:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Domain Tabs / 領域標籤 ─── */
+    .domain-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .domain-tab {
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    .domain-tab:hover {
+      color: var(--text);
+      background: var(--surface);
+      border-radius: 8px 8px 0 0;
+    }
+    .domain-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ─── Tab Content ─── */
+    .domain-tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .domain-tab-content.active {
+      display: block;
+    }
+
+    /* ─── Workflow Cards ─── */
+    .workflow-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .workflow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .workflow-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .workflow-icon {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .workflow-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .workflow-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    /* ─── Skills Grid ─── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: var(--accent);
+    }
+    .skill-level {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--accent);
+      color: white;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .skill-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .skill-progress {
+      height: 4px;
+      background: var(--accent);
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .skill-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Knowledge Graph ─── */
+    .knowledge-graph-wrapper {
+      position: relative;
+      width: 100%;
+      margin-top: 24px;
+    }
+    .knowledge-graph-canvas {
+      width: 100%;
+      height: 600px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #050510;
+      display: block;
+    }
+    .graph-controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+    .graph-btn {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .graph-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    /* ─── Knowledge Modal ─── */
+    .knowledge-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .knowledge-modal.active {
+      display: flex;
+    }
+    .knowledge-modal.hidden {
+      display: none !important;
+    }
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: slideUp 0.3s ease;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .modal-close:hover {
+      color: var(--text);
+    }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-section {
+      margin-bottom: 24px;
+    }
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+    .modal-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-section-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .modal-item {
+      padding: 10px 12px;
+      background: var(--surface-hover);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ─── Editor Container ─── */
+    .editor-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-top: 24px;
+    }
+    .editor-instructions {
+      margin-bottom: 24px;
+    }
+    .editor-instructions h3 {
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .editor-instructions p {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    .editor-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .editor-form label {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .editor-form input,
+    .editor-form textarea {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 14px;
+    }
+    .editor-form textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .editor-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    /* Domain page responsive design */
+    @media (max-width: 1200px) {
+      .templates-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .domain-stats {
+        gap: 16px;
+      }
+    }
+
     @media (max-width: 900px) {
       .tools-grid { gap: 32px; }
       .tool-category { padding-right: 32px; }
       .tools-list { gap: 16px; }
+      .templates-grid {
+        grid-template-columns: 1fr;
+      }
+      .domain-stats {
+        grid-template-columns: 1fr;
+      }
+      .domain-title {
+        font-size: 24px;
+      }
+      .section-title {
+        font-size: 18px;
+      }
+      .domain-actions {
+        flex-direction: column;
+      }
+      .action-btn {
+        width: 100%;
+      }
     }
     @media (max-width: 740px) {
       .tool-category { border-right: none; padding-right: 0; }
@@ -1128,7 +1684,7 @@
       <button class="btn-register">註冊</button>
     </div>
 
-    <h1 class="workspace-title">PM EVO AI 工作空間 0.1 <span style="color:#52525b;">›</span></h1>
+    <h1 class="workspace-title">AI 工作空間 0.1</h1>
 
     <div class="search-container">
       <input type="text" class="search-input" placeholder="問任何問題，創造任何事物" />
@@ -1226,6 +1782,594 @@
       </div>
 
     </div>
+
+    <!-- PM 領域頁面 / PM Domain Page -->
+    <div class="domain-page hidden" id="domain-page-pm" data-domain="pm">
+      <div class="domain-header">
+        <div class="domain-title">📋 PM 領域應用中心</div>
+        <div class="domain-subtitle">為所有產品經理設計的工作工具集</div>
+
+        <!-- 領域標籤欄 / Domain Tabs -->
+        <div class="domain-tabs">
+          <button class="domain-tab active" data-tab="overview">📌 總覽</button>
+          <button class="domain-tab" data-tab="workflow">🔄 工作流</button>
+          <button class="domain-tab" data-tab="skills">⭐ 技能</button>
+          <button class="domain-tab" data-tab="knowledge">🧠 知識圖譜</button>
+          <button class="domain-tab" data-tab="knowledge-editor">✏️ 知識圖譜編輯與修改</button>
+        </div>
+      </div>
+
+      <!-- 標籤內容 / Tab Contents -->
+      <div class="domain-tab-content active" id="tab-overview">
+        <div class="domain-stats">
+        <div class="stat-card fade-up">
+          <div class="stat-number">12</div>
+          <div class="stat-label">可用模板</div>
+          <div class="stat-icon">📝</div>
+        </div>
+        <div class="stat-card fade-up">
+          <div class="stat-number">8</div>
+          <div class="stat-label">工作流</div>
+          <div class="stat-icon">🔄</div>
+        </div>
+        <div class="stat-card fade-up">
+          <div class="stat-number">45</div>
+          <div class="stat-label">知識卡片</div>
+          <div class="stat-icon">💡</div>
+        </div>
+      </div>
+
+      <div class="domain-section">
+        <div class="section-title">推薦模板</div>
+        <div class="templates-grid">
+          <div class="template-card fade-up">
+            <div class="template-icon">📋</div>
+            <div class="template-name">產品需求文件</div>
+            <div class="template-desc">用於定義產品功能和需求</div>
+            <div class="template-rating">⭐⭐⭐⭐⭐ (4.9)</div>
+            <button class="template-btn">使用</button>
+          </div>
+          <div class="template-card fade-up">
+            <div class="template-icon">🔍</div>
+            <div class="template-name">競調表</div>
+            <div class="template-desc">分析競品特性和市場位置</div>
+            <div class="template-rating">⭐⭐⭐⭐ (4.7)</div>
+            <button class="template-btn">使用</button>
+          </div>
+          <div class="template-card fade-up">
+            <div class="template-icon">📊</div>
+            <div class="template-name">市場分析</div>
+            <div class="template-desc">評估市場規模和機會</div>
+            <div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div>
+            <button class="template-btn">使用</button>
+          </div>
+          <div class="template-card fade-up">
+            <div class="template-icon">🎯</div>
+            <div class="template-name">用戶故事</div>
+            <div class="template-desc">描述用戶需求和場景</div>
+            <div class="template-rating">⭐⭐⭐⭐ (4.6)</div>
+            <button class="template-btn">使用</button>
+          </div>
+          <div class="template-card fade-up">
+            <div class="template-icon">🧪</div>
+            <div class="template-name">測試計畫</div>
+            <div class="template-desc">規劃產品測試策略</div>
+            <div class="template-rating">⭐⭐⭐⭐ (4.5)</div>
+            <button class="template-btn">使用</button>
+          </div>
+          <div class="template-card fade-up">
+            <div class="template-icon">📅</div>
+            <div class="template-name">發佈計畫</div>
+            <div class="template-desc">制定上市和推廣時程</div>
+            <div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div>
+            <button class="template-btn">使用</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="domain-section">
+        <div class="section-title">領域知識</div>
+        <div class="knowledge-items">
+          <details class="knowledge-card fade-up">
+            <summary>📚 產品規劃知識</summary>
+            <div class="knowledge-content">
+              <p>• 如何撰寫有效的產品願景</p>
+              <p>• 建立產品路線圖最佳實踐</p>
+              <p>• 優先級排列框架 (MoSCoW/Kano)</p>
+              <p>• 市場定位和差異化策略</p>
+            </div>
+          </details>
+          <details class="knowledge-card fade-up">
+            <summary>🎯 需求定義知識</summary>
+            <div class="knowledge-content">
+              <p>• 編寫清晰的功能規範</p>
+              <p>• 使用場景和用戶旅程圖</p>
+              <p>• 處理衝突的需求</p>
+              <p>• 驗證需求的完整性</p>
+            </div>
+          </details>
+          <details class="knowledge-card fade-up">
+            <summary>👥 用戶研究知識</summary>
+            <div class="knowledge-content">
+              <p>• 用戶訪談技巧和技術</p>
+              <p>• 建立用戶角色 (Personas)</p>
+              <p>• 用戶調查設計和分析</p>
+              <p>• 數據驅動的洞察提煉</p>
+            </div>
+          </details>
+          <details class="knowledge-card fade-up">
+            <summary>📈 增長策略知識</summary>
+            <div class="knowledge-content">
+              <p>• 用戶獲取和留存指標</p>
+              <p>• 漏斗分析和優化</p>
+              <p>• A/B 測試設計和實驗</p>
+              <p>• 數據分析和監控看板</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="domain-actions">
+        <button class="action-btn primary">➕ 新建文件</button>
+        <button class="action-btn secondary">🔍 瀏覽全部</button>
+        <button class="action-btn secondary">📤 分享版本</button>
+      </div>
+      </div><!-- end tab-overview -->
+
+      <!-- 工作流標籤 / Workflow Tab -->
+      <div class="domain-tab-content" id="tab-workflow">
+        <div class="section-title">🔄 工作流</div>
+        <div class="workflow-list">
+          <div class="workflow-card fade-up">
+            <div class="workflow-icon">①</div>
+            <div class="workflow-name">產品規劃工作流</div>
+            <div class="workflow-desc">從市場分析到產品定位的完整工作流</div>
+            <button class="template-btn">進入</button>
+          </div>
+          <div class="workflow-card fade-up">
+            <div class="workflow-icon">②</div>
+            <div class="workflow-name">需求收集工作流</div>
+            <div class="workflow-desc">收集、驗證、優先級排列需求</div>
+            <button class="template-btn">進入</button>
+          </div>
+          <div class="workflow-card fade-up">
+            <div class="workflow-icon">③</div>
+            <div class="workflow-name">用戶研究工作流</div>
+            <div class="workflow-desc">從訪談到洞察提煉的完整流程</div>
+            <button class="template-btn">進入</button>
+          </div>
+        </div>
+      </div><!-- end tab-workflow -->
+
+      <!-- 技能標籤 / Skills Tab -->
+      <div class="domain-tab-content" id="tab-skills">
+        <div class="section-title">⭐ 技能</div>
+        <div class="skills-grid">
+          <div class="skill-card fade-up">
+            <div class="skill-level">初級</div>
+            <div class="skill-name">市場分析技能</div>
+            <div class="skill-progress" style="width: 60%;"></div>
+            <div class="skill-desc">掌握基本的市場調研方法</div>
+          </div>
+          <div class="skill-card fade-up">
+            <div class="skill-level">中級</div>
+            <div class="skill-name">需求管理技能</div>
+            <div class="skill-progress" style="width: 75%;"></div>
+            <div class="skill-desc">有效管理和排列產品需求</div>
+          </div>
+          <div class="skill-card fade-up">
+            <div class="skill-level">高級</div>
+            <div class="skill-name">策略規劃技能</div>
+            <div class="skill-progress" style="width: 45%;"></div>
+            <div class="skill-desc">制定長期產品戰略</div>
+          </div>
+          <div class="skill-card fade-up">
+            <div class="skill-level">初級</div>
+            <div class="skill-name">數據分析技能</div>
+            <div class="skill-progress" style="width: 50%;"></div>
+            <div class="skill-desc">使用數據驅動決策</div>
+          </div>
+        </div>
+      </div><!-- end tab-skills -->
+
+      <!-- 知識圖譜標籤 / Knowledge Graph Tab -->
+      <div class="domain-tab-content" id="tab-knowledge">
+        <div class="section-title">🧠 知識圖譜 — 拖拉旋轉、點擊節點查看詳情</div>
+        <div class="knowledge-graph-wrapper">
+          <canvas id="knowledge-graph-3d" class="knowledge-graph-canvas"></canvas>
+          <div class="graph-controls">
+            <button class="graph-btn graph-reset-btn">🔄 重置視角</button>
+            <button class="graph-btn graph-auto-btn">🔁 自動旋轉</button>
+          </div>
+        </div>
+      </div><!-- end tab-knowledge -->
+
+      <!-- 知識圖譜詳細內容模態框 / Knowledge Node Modal -->
+      <div class="knowledge-modal hidden" id="knowledge-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="modal-title" id="modal-title">PM 基礎</div>
+            <button class="modal-close" id="modal-close">✕</button>
+          </div>
+          <div class="modal-body" id="modal-body">
+            <!-- 動態內容將在此插入 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 知識圖譜編輯與修改標籤 / Knowledge Editor Tab -->
+      <div class="domain-tab-content" id="tab-knowledge-editor">
+        <div class="section-title">✏️ 知識圖譜編輯與修改</div>
+        <div class="editor-container">
+          <div class="editor-instructions">
+            <h3>編輯知識圖譜</h3>
+            <p>在此修改和擴展 PM 領域的知識圖譜結構。</p>
+          </div>
+          <div class="editor-form">
+            <label>知識類別名稱</label>
+            <input type="text" placeholder="例：用戶研究方法" />
+
+            <label>知識項目（用逗號分隔）</label>
+            <textarea placeholder="例：訪談, 問卷, 觀察法, 焦點小組"></textarea>
+
+            <label>描述</label>
+            <textarea placeholder="簡述此類別的重要性和應用場景"></textarea>
+
+            <div class="editor-actions">
+              <button class="action-btn primary">💾 保存變更</button>
+              <button class="action-btn secondary">🔄 取消</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- end tab-knowledge-editor -->
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         製造業領域頁面 / Manufacturing Domain Page
+         ═══════════════════════════════════════════ -->
+    <div class="domain-page hidden" id="domain-page-manufacturing" data-domain="manufacturing">
+      <div class="domain-header">
+        <div class="domain-title">🏭 製造業應用中心</div>
+        <div class="domain-subtitle">專為製造企業產品經理設計的工具集</div>
+        <div class="domain-tabs">
+          <button class="domain-tab active" data-tab="mfg-overview">📌 總覽</button>
+          <button class="domain-tab" data-tab="mfg-workflow">🔄 工作流</button>
+          <button class="domain-tab" data-tab="mfg-skills">⭐ 技能</button>
+          <button class="domain-tab" data-tab="mfg-knowledge">🧠 知識圖譜</button>
+          <button class="domain-tab" data-tab="mfg-knowledge-editor">✏️ 知識圖譜編輯與修改</button>
+        </div>
+      </div>
+      <div class="domain-tab-content active" id="tab-mfg-overview">
+        <div class="domain-stats">
+          <div class="stat-card"><div class="stat-number">10</div><div class="stat-label">可用模板</div><div class="stat-icon">📝</div></div>
+          <div class="stat-card"><div class="stat-number">6</div><div class="stat-label">工作流</div><div class="stat-icon">🔄</div></div>
+          <div class="stat-card"><div class="stat-number">38</div><div class="stat-label">知識卡片</div><div class="stat-icon">💡</div></div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">推薦模板</div>
+          <div class="templates-grid">
+            <div class="template-card"><div class="template-icon">📋</div><div class="template-name">生產計畫書</div><div class="template-desc">制定完整的生產排程和資源配置</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.9)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🔍</div><div class="template-name">品質管理計畫</div><div class="template-desc">建立品質管控標準和檢驗流程</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📦</div><div class="template-name">供應鏈管理表</div><div class="template-desc">追蹤供應商、交期和物料狀態</div><div class="template-rating">⭐⭐⭐⭐ (4.7)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🔧</div><div class="template-name">設備維護計畫</div><div class="template-desc">預防性維護排程和故障追蹤</div><div class="template-rating">⭐⭐⭐⭐ (4.6)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📊</div><div class="template-name">物料清單 (BOM)</div><div class="template-desc">產品結構和材料用量管理</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📈</div><div class="template-name">製程改善報告</div><div class="template-desc">記錄製程瓶頸和改善方案</div><div class="template-rating">⭐⭐⭐⭐ (4.5)</div><button class="template-btn">使用</button></div>
+          </div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">領域知識</div>
+          <div class="knowledge-items">
+            <details class="knowledge-card"><summary>🏭 生產管理知識</summary><div class="knowledge-content"><p>• 精實生產 (Lean Manufacturing) 原則</p><p>• 生產排程與產能規劃</p><p>• 庫存管理與 JIT 策略</p><p>• 生產線平衡與瓶頸分析</p></div></details>
+            <details class="knowledge-card"><summary>✅ 品質管理知識</summary><div class="knowledge-content"><p>• ISO 9001 品質管理系統</p><p>• SPC 統計製程控制</p><p>• FMEA 失效模式分析</p><p>• 8D 問題解決方法</p></div></details>
+            <details class="knowledge-card"><summary>📦 供應鏈知識</summary><div class="knowledge-content"><p>• 供應商評估與管理</p><p>• 採購策略與成本控制</p><p>• 物流與倉儲管理</p><p>• 風險管理與備援計畫</p></div></details>
+          </div>
+        </div>
+        <div class="domain-actions"><button class="action-btn primary">➕ 新建文件</button><button class="action-btn secondary">🔍 瀏覽全部</button><button class="action-btn secondary">📤 分享版本</button></div>
+      </div>
+      <div class="domain-tab-content" id="tab-mfg-workflow">
+        <div class="section-title">🔄 工作流</div>
+        <div class="workflow-list">
+          <div class="workflow-card"><div class="workflow-icon">①</div><div class="workflow-name">新產品導入 (NPI)</div><div class="workflow-desc">從設計到量產的完整導入流程</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">②</div><div class="workflow-name">品質管控工作流</div><div class="workflow-desc">進料檢驗→製程管控→出貨檢驗</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">③</div><div class="workflow-name">供應鏈協調工作流</div><div class="workflow-desc">需求預測→採購→物流→交付</div><button class="template-btn">進入</button></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-mfg-skills">
+        <div class="section-title">⭐ 技能</div>
+        <div class="skills-grid">
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">精實生產</div><div class="skill-progress" style="width:70%"></div><div class="skill-desc">消除浪費、持續改善的生產方法</div></div>
+          <div class="skill-card"><div class="skill-level">高級</div><div class="skill-name">品質管理</div><div class="skill-progress" style="width:85%"></div><div class="skill-desc">品質系統建立與統計管控</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">供應鏈管理</div><div class="skill-progress" style="width:65%"></div><div class="skill-desc">從原料到成品的全鏈管理</div></div>
+          <div class="skill-card"><div class="skill-level">初級</div><div class="skill-name">製程優化</div><div class="skill-progress" style="width:50%"></div><div class="skill-desc">運用數據改善生產效率</div></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-mfg-knowledge">
+        <div class="section-title">🧠 知識圖譜 — 拖拉旋轉、點擊節點查看詳情</div>
+        <div class="knowledge-graph-wrapper"><canvas id="knowledge-graph-mfg" class="knowledge-graph-canvas"></canvas><div class="graph-controls"><button class="graph-btn graph-reset-btn">🔄 重置視角</button><button class="graph-btn graph-auto-btn">🔁 自動旋轉</button></div></div>
+      </div>
+      <div class="domain-tab-content" id="tab-mfg-knowledge-editor">
+        <div class="section-title">✏️ 知識圖譜編輯與修改</div>
+        <div class="editor-container"><div class="editor-instructions"><h3>編輯知識圖譜</h3><p>在此修改和擴展製造業領域的知識圖譜結構。</p></div><div class="editor-form"><label>知識類別名稱</label><input type="text" placeholder="例：精實生產方法" /><label>知識項目（用逗號分隔）</label><textarea placeholder="例：看板管理, 5S, 價值流圖, 快速換模"></textarea><label>描述</label><textarea placeholder="簡述此類別的重要性和應用場景"></textarea><div class="editor-actions"><button class="action-btn primary">💾 保存變更</button><button class="action-btn secondary">🔄 取消</button></div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         智慧製造領域頁面 / Smart Manufacturing Domain Page
+         ═══════════════════════════════════════════ -->
+    <div class="domain-page hidden" id="domain-page-smart-mfg" data-domain="smart-mfg">
+      <div class="domain-header">
+        <div class="domain-title">⚙️ 智慧製造應用中心</div>
+        <div class="domain-subtitle">工業 4.0 與 IoT 驅動的智慧生產工具集</div>
+        <div class="domain-tabs">
+          <button class="domain-tab active" data-tab="smfg-overview">📌 總覽</button>
+          <button class="domain-tab" data-tab="smfg-workflow">🔄 工作流</button>
+          <button class="domain-tab" data-tab="smfg-skills">⭐ 技能</button>
+          <button class="domain-tab" data-tab="smfg-knowledge">🧠 知識圖譜</button>
+          <button class="domain-tab" data-tab="smfg-knowledge-editor">✏️ 知識圖譜編輯與修改</button>
+        </div>
+      </div>
+      <div class="domain-tab-content active" id="tab-smfg-overview">
+        <div class="domain-stats">
+          <div class="stat-card"><div class="stat-number">8</div><div class="stat-label">可用模板</div><div class="stat-icon">📝</div></div>
+          <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">工作流</div><div class="stat-icon">🔄</div></div>
+          <div class="stat-card"><div class="stat-number">42</div><div class="stat-label">知識卡片</div><div class="stat-icon">💡</div></div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">推薦模板</div>
+          <div class="templates-grid">
+            <div class="template-card"><div class="template-icon">🌐</div><div class="template-name">IoT 架構設計</div><div class="template-desc">物聯網感測器佈建和通訊架構</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.9)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📊</div><div class="template-name">數據分析報告</div><div class="template-desc">生產數據的統計分析和洞察</div><div class="template-rating">⭐⭐⭐⭐ (4.7)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🤖</div><div class="template-name">自動化流程規劃</div><div class="template-desc">產線自動化導入評估和時程</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🔮</div><div class="template-name">數位孿生規劃</div><div class="template-desc">建立工廠虛擬模型的規劃文件</div><div class="template-rating">⭐⭐⭐⭐ (4.6)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🔧</div><div class="template-name">預測維護方案</div><div class="template-desc">AI 驅動的設備預測性維護計畫</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🖥️</div><div class="template-name">MES 系統規劃</div><div class="template-desc">製造執行系統的需求和導入規劃</div><div class="template-rating">⭐⭐⭐⭐ (4.5)</div><button class="template-btn">使用</button></div>
+          </div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">領域知識</div>
+          <div class="knowledge-items">
+            <details class="knowledge-card"><summary>🌐 工業 4.0 知識</summary><div class="knowledge-content"><p>• 智慧工廠的核心概念</p><p>• CPS 網宇實體系統</p><p>• 工業互聯網架構</p><p>• 邊緣運算與雲端整合</p></div></details>
+            <details class="knowledge-card"><summary>📡 IoT 物聯網知識</summary><div class="knowledge-content"><p>• 感測器選型與佈建</p><p>• 通訊協定 (MQTT/OPC-UA)</p><p>• 資料採集與儲存</p><p>• 即時監控與告警</p></div></details>
+            <details class="knowledge-card"><summary>🤖 AI 與自動化知識</summary><div class="knowledge-content"><p>• 機器視覺檢測</p><p>• 預測性維護演算法</p><p>• 協作機器人 (Cobot)</p><p>• 自動導引車 (AGV)</p></div></details>
+          </div>
+        </div>
+        <div class="domain-actions"><button class="action-btn primary">➕ 新建文件</button><button class="action-btn secondary">🔍 瀏覽全部</button><button class="action-btn secondary">📤 分享版本</button></div>
+      </div>
+      <div class="domain-tab-content" id="tab-smfg-workflow">
+        <div class="section-title">🔄 工作流</div>
+        <div class="workflow-list">
+          <div class="workflow-card"><div class="workflow-icon">①</div><div class="workflow-name">IoT 部署工作流</div><div class="workflow-desc">從需求評估到感測器上線</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">②</div><div class="workflow-name">數據驅動決策</div><div class="workflow-desc">收集→分析→洞察→行動</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">③</div><div class="workflow-name">自動化升級工作流</div><div class="workflow-desc">現有產線的自動化改造評估</div><button class="template-btn">進入</button></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-smfg-skills">
+        <div class="section-title">⭐ 技能</div>
+        <div class="skills-grid">
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">IoT 技術</div><div class="skill-progress" style="width:65%"></div><div class="skill-desc">感測器、通訊協定和平台整合</div></div>
+          <div class="skill-card"><div class="skill-level">高級</div><div class="skill-name">數據分析</div><div class="skill-progress" style="width:80%"></div><div class="skill-desc">生產數據的統計和 AI 分析</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">自動化控制</div><div class="skill-progress" style="width:60%"></div><div class="skill-desc">PLC、SCADA 和機器人控制</div></div>
+          <div class="skill-card"><div class="skill-level">初級</div><div class="skill-name">數位孿生</div><div class="skill-progress" style="width:40%"></div><div class="skill-desc">虛擬工廠模型建立與模擬</div></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-smfg-knowledge">
+        <div class="section-title">🧠 知識圖譜 — 拖拉旋轉、點擊節點查看詳情</div>
+        <div class="knowledge-graph-wrapper"><canvas id="knowledge-graph-smfg" class="knowledge-graph-canvas"></canvas><div class="graph-controls"><button class="graph-btn graph-reset-btn">🔄 重置視角</button><button class="graph-btn graph-auto-btn">🔁 自動旋轉</button></div></div>
+      </div>
+      <div class="domain-tab-content" id="tab-smfg-knowledge-editor">
+        <div class="section-title">✏️ 知識圖譜編輯與修改</div>
+        <div class="editor-container"><div class="editor-instructions"><h3>編輯知識圖譜</h3><p>在此修改和擴展智慧製造領域的知識圖譜結構。</p></div><div class="editor-form"><label>知識類別名稱</label><input type="text" placeholder="例：IoT 感測器技術" /><label>知識項目（用逗號分隔）</label><textarea placeholder="例：溫度感測, 振動感測, 視覺檢測, 流量感測"></textarea><label>描述</label><textarea placeholder="簡述此類別的重要性和應用場景"></textarea><div class="editor-actions"><button class="action-btn primary">💾 保存變更</button><button class="action-btn secondary">🔄 取消</button></div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         教育領域頁面 / Education Domain Page
+         ═══════════════════════════════════════════ -->
+    <div class="domain-page hidden" id="domain-page-education" data-domain="education">
+      <div class="domain-header">
+        <div class="domain-title">📚 教育領域應用中心</div>
+        <div class="domain-subtitle">為線上教育和教學管理設計的工具集</div>
+        <div class="domain-tabs">
+          <button class="domain-tab active" data-tab="edu-overview">📌 總覽</button>
+          <button class="domain-tab" data-tab="edu-workflow">🔄 工作流</button>
+          <button class="domain-tab" data-tab="edu-skills">⭐ 技能</button>
+          <button class="domain-tab" data-tab="edu-knowledge">🧠 知識圖譜</button>
+          <button class="domain-tab" data-tab="edu-knowledge-editor">✏️ 知識圖譜編輯與修改</button>
+        </div>
+      </div>
+      <div class="domain-tab-content active" id="tab-edu-overview">
+        <div class="domain-stats">
+          <div class="stat-card"><div class="stat-number">14</div><div class="stat-label">可用模板</div><div class="stat-icon">📝</div></div>
+          <div class="stat-card"><div class="stat-number">7</div><div class="stat-label">工作流</div><div class="stat-icon">🔄</div></div>
+          <div class="stat-card"><div class="stat-number">52</div><div class="stat-label">知識卡片</div><div class="stat-icon">💡</div></div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">推薦模板</div>
+          <div class="templates-grid">
+            <div class="template-card"><div class="template-icon">📖</div><div class="template-name">課程設計大綱</div><div class="template-desc">規劃課程目標、單元和評量方式</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.9)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📝</div><div class="template-name">教學評量表</div><div class="template-desc">設計多元評量標準和評分量尺</div><div class="template-rating">⭐⭐⭐⭐ (4.7)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📊</div><div class="template-name">學習成效報告</div><div class="template-desc">分析學生學習數據和學習成果</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🎥</div><div class="template-name">線上課程規劃</div><div class="template-desc">錄影課程的腳本和上架計畫</div><div class="template-rating">⭐⭐⭐⭐ (4.6)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📋</div><div class="template-name">教材開發計畫</div><div class="template-desc">教材編寫時程和審核流程</div><div class="template-rating">⭐⭐⭐⭐ (4.5)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">👤</div><div class="template-name">學生學習檔案</div><div class="template-desc">追蹤學生的學習歷程和進步</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+          </div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">領域知識</div>
+          <div class="knowledge-items">
+            <details class="knowledge-card"><summary>📖 教學設計知識</summary><div class="knowledge-content"><p>• ADDIE 教學設計模型</p><p>• 反向設計 (UbD) 框架</p><p>• 差異化教學策略</p><p>• 混成學習 (Blended Learning)</p></div></details>
+            <details class="knowledge-card"><summary>💡 學習理論知識</summary><div class="knowledge-content"><p>• 建構主義學習理論</p><p>• 認知負荷理論</p><p>• 社會學習理論</p><p>• 自主學習策略</p></div></details>
+            <details class="knowledge-card"><summary>💻 教育科技知識</summary><div class="knowledge-content"><p>• LMS 學習管理系統</p><p>• 自適應學習平台</p><p>• AI 輔助教學</p><p>• 遊戲化學習設計</p></div></details>
+          </div>
+        </div>
+        <div class="domain-actions"><button class="action-btn primary">➕ 新建文件</button><button class="action-btn secondary">🔍 瀏覽全部</button><button class="action-btn secondary">📤 分享版本</button></div>
+      </div>
+      <div class="domain-tab-content" id="tab-edu-workflow">
+        <div class="section-title">🔄 工作流</div>
+        <div class="workflow-list">
+          <div class="workflow-card"><div class="workflow-icon">①</div><div class="workflow-name">課程開發工作流</div><div class="workflow-desc">從需求分析到課程上線</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">②</div><div class="workflow-name">教學評估工作流</div><div class="workflow-desc">設計→施測→分析→改善</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">③</div><div class="workflow-name">學習分析工作流</div><div class="workflow-desc">數據收集→洞察→個人化推薦</div><button class="template-btn">進入</button></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-edu-skills">
+        <div class="section-title">⭐ 技能</div>
+        <div class="skills-grid">
+          <div class="skill-card"><div class="skill-level">高級</div><div class="skill-name">課程設計</div><div class="skill-progress" style="width:85%"></div><div class="skill-desc">運用教學設計模型規劃課程</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">教學技術</div><div class="skill-progress" style="width:70%"></div><div class="skill-desc">運用數位工具輔助教學</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">評量設計</div><div class="skill-progress" style="width:65%"></div><div class="skill-desc">設計有效的多元評量方式</div></div>
+          <div class="skill-card"><div class="skill-level">初級</div><div class="skill-name">學習分析</div><div class="skill-progress" style="width:45%"></div><div class="skill-desc">運用數據分析學習成效</div></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-edu-knowledge">
+        <div class="section-title">🧠 知識圖譜 — 拖拉旋轉、點擊節點查看詳情</div>
+        <div class="knowledge-graph-wrapper"><canvas id="knowledge-graph-edu" class="knowledge-graph-canvas"></canvas><div class="graph-controls"><button class="graph-btn graph-reset-btn">🔄 重置視角</button><button class="graph-btn graph-auto-btn">🔁 自動旋轉</button></div></div>
+      </div>
+      <div class="domain-tab-content" id="tab-edu-knowledge-editor">
+        <div class="section-title">✏️ 知識圖譜編輯與修改</div>
+        <div class="editor-container"><div class="editor-instructions"><h3>編輯知識圖譜</h3><p>在此修改和擴展教育領域的知識圖譜結構。</p></div><div class="editor-form"><label>知識類別名稱</label><input type="text" placeholder="例：差異化教學" /><label>知識項目（用逗號分隔）</label><textarea placeholder="例：分層教學, 學習風格, 多元智能, 鷹架策略"></textarea><label>描述</label><textarea placeholder="簡述此類別的重要性和應用場景"></textarea><div class="editor-actions"><button class="action-btn primary">💾 保存變更</button><button class="action-btn secondary">🔄 取消</button></div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         金融業領域頁面 / Finance Domain Page
+         ═══════════════════════════════════════════ -->
+    <div class="domain-page hidden" id="domain-page-finance" data-domain="finance">
+      <div class="domain-header">
+        <div class="domain-title">🏦 金融業應用中心</div>
+        <div class="domain-subtitle">為金融科技產品和風險管理設計的工具集</div>
+        <div class="domain-tabs">
+          <button class="domain-tab active" data-tab="fin-overview">📌 總覽</button>
+          <button class="domain-tab" data-tab="fin-workflow">🔄 工作流</button>
+          <button class="domain-tab" data-tab="fin-skills">⭐ 技能</button>
+          <button class="domain-tab" data-tab="fin-knowledge">🧠 知識圖譜</button>
+          <button class="domain-tab" data-tab="fin-knowledge-editor">✏️ 知識圖譜編輯與修改</button>
+        </div>
+      </div>
+      <div class="domain-tab-content active" id="tab-fin-overview">
+        <div class="domain-stats">
+          <div class="stat-card"><div class="stat-number">11</div><div class="stat-label">可用模板</div><div class="stat-icon">📝</div></div>
+          <div class="stat-card"><div class="stat-number">6</div><div class="stat-label">工作流</div><div class="stat-icon">🔄</div></div>
+          <div class="stat-card"><div class="stat-number">48</div><div class="stat-label">知識卡片</div><div class="stat-icon">💡</div></div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">推薦模板</div>
+          <div class="templates-grid">
+            <div class="template-card"><div class="template-icon">⚠️</div><div class="template-name">風險評估報告</div><div class="template-desc">識別、量化和管理金融風險</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.9)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📜</div><div class="template-name">合規審查報告</div><div class="template-desc">法規遵循檢查和改善建議</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📈</div><div class="template-name">投資分析報告</div><div class="template-desc">市場趨勢分析和投資建議</div><div class="template-rating">⭐⭐⭐⭐ (4.7)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">🔍</div><div class="template-name">KYC 盡職調查</div><div class="template-desc">客戶身份驗證和風險分級</div><div class="template-rating">⭐⭐⭐⭐ (4.6)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">💹</div><div class="template-name">財務模型</div><div class="template-desc">建立營收預測和估值模型</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📋</div><div class="template-name">監管報告模板</div><div class="template-desc">金管會和央行定期申報用</div><div class="template-rating">⭐⭐⭐⭐ (4.5)</div><button class="template-btn">使用</button></div>
+          </div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">領域知識</div>
+          <div class="knowledge-items">
+            <details class="knowledge-card"><summary>⚠️ 風險管理知識</summary><div class="knowledge-content"><p>• 信用風險評估模型</p><p>• 市場風險 VaR 分析</p><p>• 作業風險管理框架</p><p>• 壓力測試與情境分析</p></div></details>
+            <details class="knowledge-card"><summary>📜 合規法規知識</summary><div class="knowledge-content"><p>• 巴塞爾協定 (Basel III)</p><p>• 反洗錢 (AML) 法規</p><p>• 個資保護法 (GDPR/PDPA)</p><p>• 金融消費者保護</p></div></details>
+            <details class="knowledge-card"><summary>💳 金融科技知識</summary><div class="knowledge-content"><p>• 開放銀行 (Open Banking)</p><p>• 區塊鏈與數位資產</p><p>• 支付系統與數位錢包</p><p>• AI 信用評分</p></div></details>
+          </div>
+        </div>
+        <div class="domain-actions"><button class="action-btn primary">➕ 新建文件</button><button class="action-btn secondary">🔍 瀏覽全部</button><button class="action-btn secondary">📤 分享版本</button></div>
+      </div>
+      <div class="domain-tab-content" id="tab-fin-workflow">
+        <div class="section-title">🔄 工作流</div>
+        <div class="workflow-list">
+          <div class="workflow-card"><div class="workflow-icon">①</div><div class="workflow-name">風險管理工作流</div><div class="workflow-desc">辨識→評估→監控→報告</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">②</div><div class="workflow-name">合規審查工作流</div><div class="workflow-desc">法規盤點→差異分析→改善計畫</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">③</div><div class="workflow-name">產品上線工作流</div><div class="workflow-desc">需求→合規→測試→上線→監控</div><button class="template-btn">進入</button></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-fin-skills">
+        <div class="section-title">⭐ 技能</div>
+        <div class="skills-grid">
+          <div class="skill-card"><div class="skill-level">高級</div><div class="skill-name">風險分析</div><div class="skill-progress" style="width:80%"></div><div class="skill-desc">辨識和量化金融風險</div></div>
+          <div class="skill-card"><div class="skill-level">高級</div><div class="skill-name">合規管理</div><div class="skill-progress" style="width:85%"></div><div class="skill-desc">確保產品符合法規要求</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">金融建模</div><div class="skill-progress" style="width:70%"></div><div class="skill-desc">建立財務預測和估值模型</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">數據分析</div><div class="skill-progress" style="width:65%"></div><div class="skill-desc">運用數據驅動金融決策</div></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-fin-knowledge">
+        <div class="section-title">🧠 知識圖譜 — 拖拉旋轉、點擊節點查看詳情</div>
+        <div class="knowledge-graph-wrapper"><canvas id="knowledge-graph-fin" class="knowledge-graph-canvas"></canvas><div class="graph-controls"><button class="graph-btn graph-reset-btn">🔄 重置視角</button><button class="graph-btn graph-auto-btn">🔁 自動旋轉</button></div></div>
+      </div>
+      <div class="domain-tab-content" id="tab-fin-knowledge-editor">
+        <div class="section-title">✏️ 知識圖譜編輯與修改</div>
+        <div class="editor-container"><div class="editor-instructions"><h3>編輯知識圖譜</h3><p>在此修改和擴展金融業領域的知識圖譜結構。</p></div><div class="editor-form"><label>知識類別名稱</label><input type="text" placeholder="例：反洗錢策略" /><label>知識項目（用逗號分隔）</label><textarea placeholder="例：客戶辨識, 交易監控, 可疑報告, 制裁篩查"></textarea><label>描述</label><textarea placeholder="簡述此類別的重要性和應用場景"></textarea><div class="editor-actions"><button class="action-btn primary">💾 保存變更</button><button class="action-btn secondary">🔄 取消</button></div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         公家機關領域頁面 / Government Domain Page
+         ═══════════════════════════════════════════ -->
+    <div class="domain-page hidden" id="domain-page-government" data-domain="government">
+      <div class="domain-header">
+        <div class="domain-title">🏛️ 公家機關應用中心</div>
+        <div class="domain-subtitle">為政府部門和公共服務設計的工具集</div>
+        <div class="domain-tabs">
+          <button class="domain-tab active" data-tab="gov-overview">📌 總覽</button>
+          <button class="domain-tab" data-tab="gov-workflow">🔄 工作流</button>
+          <button class="domain-tab" data-tab="gov-skills">⭐ 技能</button>
+          <button class="domain-tab" data-tab="gov-knowledge">🧠 知識圖譜</button>
+          <button class="domain-tab" data-tab="gov-knowledge-editor">✏️ 知識圖譜編輯與修改</button>
+        </div>
+      </div>
+      <div class="domain-tab-content active" id="tab-gov-overview">
+        <div class="domain-stats">
+          <div class="stat-card"><div class="stat-number">9</div><div class="stat-label">可用模板</div><div class="stat-icon">📝</div></div>
+          <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">工作流</div><div class="stat-icon">🔄</div></div>
+          <div class="stat-card"><div class="stat-number">35</div><div class="stat-label">知識卡片</div><div class="stat-icon">💡</div></div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">推薦模板</div>
+          <div class="templates-grid">
+            <div class="template-card"><div class="template-icon">📜</div><div class="template-name">政策白皮書</div><div class="template-desc">政策背景、分析和建議方案</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.9)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">💰</div><div class="template-name">預算編列表</div><div class="template-desc">年度預算規劃和分配</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📋</div><div class="template-name">公開招標文件</div><div class="template-desc">招標公告、資格審查和評選標準</div><div class="template-rating">⭐⭐⭐⭐ (4.7)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📊</div><div class="template-name">績效考核報告</div><div class="template-desc">部門和個人績效評估表</div><div class="template-rating">⭐⭐⭐⭐ (4.6)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">⚖️</div><div class="template-name">法規草案</div><div class="template-desc">法規修訂的背景說明和條文</div><div class="template-rating">⭐⭐⭐⭐ (4.5)</div><button class="template-btn">使用</button></div>
+            <div class="template-card"><div class="template-icon">📬</div><div class="template-name">民眾陳情處理</div><div class="template-desc">陳情案件的受理和回覆流程</div><div class="template-rating">⭐⭐⭐⭐⭐ (4.8)</div><button class="template-btn">使用</button></div>
+          </div>
+        </div>
+        <div class="domain-section">
+          <div class="section-title">領域知識</div>
+          <div class="knowledge-items">
+            <details class="knowledge-card"><summary>📜 政策制定知識</summary><div class="knowledge-content"><p>• 政策分析框架</p><p>• 利害關係人分析</p><p>• 政策影響評估</p><p>• 公眾諮詢流程</p></div></details>
+            <details class="knowledge-card"><summary>💰 預算財務知識</summary><div class="knowledge-content"><p>• 零基預算 (ZBB)</p><p>• 績效預算制度</p><p>• 政府採購法規</p><p>• 財務稽核原則</p></div></details>
+            <details class="knowledge-card"><summary>🏛️ 公共服務知識</summary><div class="knowledge-content"><p>• 數位政府轉型</p><p>• 開放資料 (Open Data)</p><p>• 民眾服務設計</p><p>• 跨機關協調機制</p></div></details>
+          </div>
+        </div>
+        <div class="domain-actions"><button class="action-btn primary">➕ 新建文件</button><button class="action-btn secondary">🔍 瀏覽全部</button><button class="action-btn secondary">📤 分享版本</button></div>
+      </div>
+      <div class="domain-tab-content" id="tab-gov-workflow">
+        <div class="section-title">🔄 工作流</div>
+        <div class="workflow-list">
+          <div class="workflow-card"><div class="workflow-icon">①</div><div class="workflow-name">政策研擬工作流</div><div class="workflow-desc">議題分析→草案→諮詢→核定</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">②</div><div class="workflow-name">預算編列工作流</div><div class="workflow-desc">需求彙整→編列→審議→核定</div><button class="template-btn">進入</button></div>
+          <div class="workflow-card"><div class="workflow-icon">③</div><div class="workflow-name">採購流程工作流</div><div class="workflow-desc">需求→招標→評選→簽約→驗收</div><button class="template-btn">進入</button></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-gov-skills">
+        <div class="section-title">⭐ 技能</div>
+        <div class="skills-grid">
+          <div class="skill-card"><div class="skill-level">高級</div><div class="skill-name">政策分析</div><div class="skill-progress" style="width:80%"></div><div class="skill-desc">政策問題辨識和方案評估</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">預算管理</div><div class="skill-progress" style="width:70%"></div><div class="skill-desc">編列、執行和考核政府預算</div></div>
+          <div class="skill-card"><div class="skill-level">中級</div><div class="skill-name">公共溝通</div><div class="skill-progress" style="width:65%"></div><div class="skill-desc">政策說明和民意回應</div></div>
+          <div class="skill-card"><div class="skill-level">初級</div><div class="skill-name">法規研究</div><div class="skill-progress" style="width:50%"></div><div class="skill-desc">法規解讀和修訂建議</div></div>
+        </div>
+      </div>
+      <div class="domain-tab-content" id="tab-gov-knowledge">
+        <div class="section-title">🧠 知識圖譜 — 拖拉旋轉、點擊節點查看詳情</div>
+        <div class="knowledge-graph-wrapper"><canvas id="knowledge-graph-gov" class="knowledge-graph-canvas"></canvas><div class="graph-controls"><button class="graph-btn graph-reset-btn">🔄 重置視角</button><button class="graph-btn graph-auto-btn">🔁 自動旋轉</button></div></div>
+      </div>
+      <div class="domain-tab-content" id="tab-gov-knowledge-editor">
+        <div class="section-title">✏️ 知識圖譜編輯與修改</div>
+        <div class="editor-container"><div class="editor-instructions"><h3>編輯知識圖譜</h3><p>在此修改和擴展公家機關領域的知識圖譜結構。</p></div><div class="editor-form"><label>知識類別名稱</label><input type="text" placeholder="例：開放資料策略" /><label>知識項目（用逗號分隔）</label><textarea placeholder="例：資料盤點, 格式標準, API 開放, 資料品質"></textarea><label>描述</label><textarea placeholder="簡述此類別的重要性和應用場景"></textarea><div class="editor-actions"><button class="action-btn primary">💾 保存變更</button><button class="action-btn secondary">🔄 取消</button></div></div></div>
+      </div>
+    </div>
+
   </main>
 
   <!-- Settings Modal -->
@@ -1926,6 +3070,893 @@
     chatInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') sendMessage();
     });
+
+    // ── Domain Page Switching ──
+    const toolsGrid = document.querySelector('.tools-grid');
+    const mainContent = document.querySelector('.main-content');
+
+    function showDomainPage(domainId) {
+      // 隱藏主頁面
+      if (toolsGrid) {
+        toolsGrid.style.display = 'none';
+      }
+
+      // 隱藏標題和搜尋框
+      const wsTitle = document.querySelector('.workspace-title');
+      if (wsTitle) wsTitle.style.display = 'none';
+      const searchContainer = document.querySelector('.search-container');
+      if (searchContainer) searchContainer.style.display = 'none';
+
+      // 隱藏所有領域頁面
+      document.querySelectorAll('.domain-page').forEach(page => {
+        page.classList.remove('active');
+        page.classList.add('hidden');
+      });
+
+      // 顯示選中的領域頁面
+      const domainPage = document.getElementById(`domain-page-${domainId}`);
+      if (domainPage) {
+        domainPage.classList.remove('hidden');
+        domainPage.classList.add('active');
+      }
+
+      // 更新導航欄選中狀態
+      document.querySelectorAll('.domain-nav-item').forEach(item => {
+        if (item.dataset.domainId === domainId) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // 保存當前領域到 localStorage
+      localStorage.setItem('gs-current-domain', domainId);
+
+      // 滾動到頂部
+      mainContent.scrollTop = 0;
+    }
+
+    function showMainPage() {
+      // 顯示主頁面
+      if (toolsGrid) {
+        toolsGrid.style.display = 'flex';
+      }
+
+      // 顯示標題和搜尋框
+      const wsTitle = document.querySelector('.workspace-title');
+      if (wsTitle) wsTitle.style.display = 'flex';
+      const searchContainer = document.querySelector('.search-container');
+      if (searchContainer) searchContainer.style.display = 'flex';
+
+      // 隱藏所有領域頁面
+      document.querySelectorAll('.domain-page').forEach(page => {
+        page.classList.remove('active');
+        page.classList.add('hidden');
+      });
+
+      // 移除導航欄的活動狀態
+      document.querySelectorAll('.domain-nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // 清除保存的領域
+      localStorage.removeItem('gs-current-domain');
+
+      // 滾動到頂部
+      mainContent.scrollTop = 0;
+    }
+
+    // 為應用領域導航項添加點擊事件（初始化時）
+    function setupDomainNavigation() {
+      const checkDomainNav = setInterval(() => {
+        const domainItems = document.querySelectorAll('.domain-nav-item');
+        if (domainItems.length > 0) {
+          clearInterval(checkDomainNav);
+          domainItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const domainId = item.dataset.domainId;
+              showDomainPage(domainId);
+            });
+          });
+        }
+      }, 100);
+    }
+
+    // 為首頁「新增」和「首頁」導航項添加點擊事件
+    function setupHomeNavigation() {
+      const newItem = document.querySelector('[data-nav-id="new"]');
+      const homeItem = document.querySelector('[data-nav-id="home"]');
+
+      if (newItem) {
+        newItem.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showMainPage();
+        });
+      }
+
+      if (homeItem) {
+        homeItem.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showMainPage();
+        });
+      }
+    }
+
+    // ── All Domain Knowledge Node Data ──
+    const allKnowledgeNodeData = {
+      manufacturing: {
+        'mfg-center': { title: '🏭 製造業知識', sections: [{ name: '核心概念', items: ['製造業涵蓋從原料到成品的全過程', '精實生產是現代製造的基礎哲學', '品質、成本、交期 (QCD) 是核心指標'] }] },
+        'mfg-production': { title: '📋 生產管理', sections: [{ name: '生產規劃', items: ['產能規劃與排程最佳化', '物料需求計畫 (MRP)', '生產線平衡與瓶頸分析'] }, { name: '精實生產', items: ['看板管理系統', '5S 現場管理', '價值流圖分析', '快速換模 (SMED)'] }] },
+        'mfg-quality': { title: '✅ 品質系統', sections: [{ name: '品質管理', items: ['ISO 9001 品質管理系統', 'SPC 統計製程控制', 'FMEA 失效模式分析'] }, { name: '問題解決', items: ['8D 問題解決方法', '魚骨圖 (特性要因圖)', '5 Why 根因分析', 'PDCA 持續改善循環'] }] },
+        'mfg-supply': { title: '📦 供應鏈', sections: [{ name: '供應管理', items: ['供應商評估與分級', '採購策略與成本控制', '物流與倉儲管理', 'JIT 即時供貨策略'] }] },
+        'mfg-equipment': { title: '🔧 設備維護', sections: [{ name: '維護策略', items: ['預防性維護排程', 'TPM 全面生產保全', '設備效率 OEE 分析', '故障樹分析 (FTA)'] }] },
+      },
+      'smart-mfg': {
+        'smfg-center': { title: '⚙️ 智慧製造知識', sections: [{ name: '核心概念', items: ['工業 4.0 是第四次工業革命', 'CPS 網宇實體系統整合虛實世界', '數據驅動的智慧決策'] }] },
+        'smfg-industry40': { title: '🌐 工業 4.0', sections: [{ name: '核心架構', items: ['智慧工廠的參考架構 (RAMI 4.0)', '雲端-邊緣-終端三層架構', '數位孿生建模與模擬'] }, { name: '關鍵技術', items: ['5G 工業通訊', '邊緣運算', 'AR/VR 輔助製造', '數位供應鏈'] }] },
+        'smfg-iot': { title: '📡 IoT 物聯網', sections: [{ name: '感測與連線', items: ['工業感測器選型和佈建', 'MQTT / OPC-UA 通訊協定', '資料採集 (SCADA/DCS)', '即時監控儀表板設計'] }] },
+        'smfg-data': { title: '📊 數據分析', sections: [{ name: '分析方法', items: ['製程數據的統計分析', '機器學習異常偵測', '品質預測模型', '生產最佳化演算法'] }] },
+        'smfg-automation': { title: '🤖 自動化', sections: [{ name: '自動化技術', items: ['PLC 可程式邏輯控制', '協作機器人 (Cobot)', '自動導引車 (AGV/AMR)', '機器視覺檢測系統'] }] },
+      },
+      education: {
+        'edu-center': { title: '📚 教育知識', sections: [{ name: '核心概念', items: ['教育的目的是啟發學習而非灌輸知識', '以學習者為中心的教學設計', '科技是輔助教學的工具而非替代'] }] },
+        'edu-design': { title: '📖 教學設計', sections: [{ name: '設計模型', items: ['ADDIE 系統化教學設計模型', '反向設計 (Understanding by Design)', 'SAM 敏捷教學設計模型'] }, { name: '教學策略', items: ['差異化教學', '翻轉教室', '專題式學習 (PBL)', '合作學習策略'] }] },
+        'edu-theory': { title: '💡 學習理論', sections: [{ name: '理論基礎', items: ['建構主義 — 學習者主動建構知識', '認知負荷理論 — 優化資訊呈現方式', '社會學習理論 — 觀察和互動學習', '多元智能理論 — 尊重個別差異'] }] },
+        'edu-tech': { title: '💻 教育科技', sections: [{ name: '工具與平台', items: ['LMS 學習管理系統 (Moodle/Canvas)', '自適應學習平台', 'AI 輔助教學和批改', '遊戲化學習引擎'] }] },
+        'edu-assessment': { title: '📝 評量與回饋', sections: [{ name: '評量方式', items: ['形成性評量與總結性評量', '量尺 (Rubric) 評分設計', '同儕互評策略', '學習歷程檔案 (e-Portfolio)'] }] },
+      },
+      finance: {
+        'fin-center': { title: '🏦 金融知識', sections: [{ name: '核心概念', items: ['金融的本質是風險定價和資金配置', '合規是金融產品的生命線', '科技正在重塑金融服務的形態'] }] },
+        'fin-risk': { title: '⚠️ 風險管理', sections: [{ name: '風險類型', items: ['信用風險 — 借款人違約的可能性', '市場風險 — 利率/匯率/股價波動', '作業風險 — 內部流程失誤或詐欺'] }, { name: '管理工具', items: ['VaR 風險值計算', '壓力測試與情境分析', '風險限額管理', '損失事件資料庫'] }] },
+        'fin-compliance': { title: '📜 合規法規', sections: [{ name: '重要法規', items: ['巴塞爾協定 (Basel III/IV)', '反洗錢 (AML) 與打擊資恐', '個資保護法 (GDPR/PDPA)', '金融消費者保護法'] }] },
+        'fin-fintech': { title: '💳 金融科技', sections: [{ name: 'FinTech 領域', items: ['開放銀行 API 生態系', '區塊鏈與數位資產', '支付系統與數位錢包', 'AI 信用評分與反詐欺'] }] },
+        'fin-investment': { title: '📈 投資策略', sections: [{ name: '投資分析', items: ['基本面分析框架', '技術分析工具', '資產配置理論', 'ESG 永續投資評估'] }] },
+      },
+      government: {
+        'gov-center': { title: '🏛️ 公家機關知識', sections: [{ name: '核心概念', items: ['公共政策須以民眾福祉為依歸', '透明、課責、參與是施政基礎', '數位轉型是提升公共服務的關鍵'] }] },
+        'gov-policy': { title: '📜 政策制定', sections: [{ name: '政策流程', items: ['問題辨識與議題設定', '政策方案研擬和評估', '利害關係人分析和諮詢'] }, { name: '分析工具', items: ['成本效益分析 (CBA)', '政策影響評估 (RIA)', '公眾諮詢和民調', 'SWOT 政策環境分析'] }] },
+        'gov-budget': { title: '💰 預算財務', sections: [{ name: '預算管理', items: ['零基預算 (ZBB) 編列法', '績效預算制度', '政府採購法規和程序', '財務稽核和內部控制'] }] },
+        'gov-service': { title: '🏢 公共服務', sections: [{ name: '服務創新', items: ['數位政府 (e-Government)', '開放資料 (Open Data) 策略', '一站式服務整合', '民眾滿意度調查'] }] },
+        'gov-legal': { title: '⚖️ 法規合規', sections: [{ name: '法規管理', items: ['法規制定程序和效力', '行政程序法基本原則', '資訊公開法規範', '跨機關法規協調機制'] }] },
+      },
+    };
+
+    const knowledgeNodeData = {
+      'pm-basics': {
+        title: '📚 PM 基礎',
+        sections: [
+          {
+            name: '核心概念',
+            items: [
+              '產品管理是連接市場、技術和商業的橋樑',
+              'PM 需要具備跨職能的協調能力',
+              '數據驅動決策是現代 PM 的必備技能'
+            ]
+          },
+          {
+            name: 'PM 的主要職責',
+            items: [
+              '定義產品願景和戰略方向',
+              '收集和優先級排列用戶需求',
+              '與工程、設計、市場等團隊協調',
+              '監控產品性能和用戶滿意度'
+            ]
+          },
+          {
+            name: '常用工具',
+            items: [
+              'Jira / Linear 用於任務管理',
+              'Figma / Sketch 用於設計協作',
+              'Mixpanel / Amplitude 用於數據分析',
+              'Notion / Confluence 用於文檔'
+            ]
+          }
+        ]
+      },
+      'market-strategy': {
+        title: '📊 市場與戰略',
+        sections: [
+          {
+            name: '市場定位',
+            items: [
+              '清晰定義目標用戶和市場段位',
+              '分析競爭對手的優劣勢',
+              '建立獨特的價值主張',
+              '制定差異化的發展策略'
+            ]
+          },
+          {
+            name: '競爭分析框架',
+            items: [
+              'SWOT 分析 - 優勢、劣勢、機會、威脅',
+              'Porter 五力分析 - 行業競爭力評估',
+              '客戶痛點對標 - 競品功能比較',
+              '定價策略分析 - 價值感知'
+            ]
+          },
+          {
+            name: '產品戰略制定',
+            items: [
+              '1-3 年的長期產品願景',
+              '按季度的可交付成果規劃',
+              '關鍵指標 (KPI) 定義',
+              '資源配置和優先級決策'
+            ]
+          }
+        ]
+      },
+      'user-needs': {
+        title: '👥 用戶與需求',
+        sections: [
+          {
+            name: '用戶研究方法',
+            items: [
+              '定性研究：用戶訪談、焦點小組',
+              '定量研究：問卷調查、數據分析',
+              '可用性測試：原型測試、A/B 測試',
+              '行為分析：埋點追蹤、熱力圖'
+            ]
+          },
+          {
+            name: '需求收集與管理',
+            items: [
+              '從多個渠道收集用戶需求',
+              '區分功能需求和非功能需求',
+              '評估需求的重要性和可行性',
+              '建立需求優先級矩陣'
+            ]
+          },
+          {
+            name: '用戶體驗優化',
+            items: [
+              '建立用戶角色 (Personas)',
+              '繪製用戶旅程圖',
+              '識別痛點和改進機會',
+              '持續迭代優化'
+            ]
+          }
+        ]
+      },
+      'execution': {
+        title: '⚡ 執行與交付',
+        sections: [
+          {
+            name: '開發協調',
+            items: [
+              '清晰的需求文檔和驗收標準',
+              '敏捷開發流程（Sprint 規劃）',
+              '定期的進度同步會議',
+              '質量保證和測試流程'
+            ]
+          },
+          {
+            name: '上市策略',
+            items: [
+              '發佈時機的選擇和規劃',
+              '市場營銷配合計劃',
+              '客戶教育和文檔準備',
+              '發佈後的監控和支持'
+            ]
+          },
+          {
+            name: '性能監控',
+            items: [
+              '定義和追蹤 KPI 指標',
+              '用戶反饋收集和分析',
+              '數據驅動的迭代優化',
+              '建立持續改進的文化'
+            ]
+          }
+        ]
+      }
+    };
+
+    // ── 3D Knowledge Graph — Pure Three.js ──
+    let kg3d = null;
+
+    function setupKnowledgeGraph() {
+      // 初始化會在切換到知識圖譜標籤時觸發
+    }
+
+    // 各領域的 3D 圖譜節點資料
+    const domainGraphData = {
+      pm: {
+        canvasId: 'knowledge-graph-3d',
+        dataKey: null,
+        nodes: [
+          { id: 'pm-center', name: 'PM 知識', color: 0x3b82f6, size: 14, x: 0, y: 0, z: 0 },
+          { id: 'pm-basics', name: 'PM 基礎', color: 0x60a5fa, size: 9, x: -130, y: 90, z: -70 },
+          { id: 'market-strategy', name: '市場與戰略', color: 0x38bdf8, size: 9, x: 130, y: 70, z: -90 },
+          { id: 'user-needs', name: '用戶與需求', color: 0x818cf8, size: 9, x: -90, y: -100, z: 80 },
+          { id: 'execution', name: '執行與交付', color: 0x34d399, size: 9, x: 110, y: -80, z: 100 },
+          { id: 'pm-concept', name: '產品管理概念', color: 0x93c5fd, size: 6, x: -190, y: 140, z: -110 },
+          { id: 'pm-role', name: 'PM 職責', color: 0x93c5fd, size: 6, x: -170, y: 60, z: -130 },
+          { id: 'pm-tools', name: 'PM 工具', color: 0x93c5fd, size: 6, x: -90, y: 130, z: -40 },
+          { id: 'pm-lifecycle', name: '產品生命週期', color: 0xbfdbfe, size: 4, x: -250, y: 180, z: -140 },
+          { id: 'pm-okr', name: 'OKR 目標管理', color: 0xbfdbfe, size: 4, x: -230, y: 100, z: -170 },
+          { id: 'pm-jira', name: 'Jira / Linear', color: 0xbfdbfe, size: 4, x: -60, y: 170, z: -10 },
+          { id: 'pm-figma', name: 'Figma 協作', color: 0xbfdbfe, size: 4, x: -120, y: 170, z: -70 },
+          { id: 'market-position', name: '市場定位', color: 0x7dd3fc, size: 6, x: 190, y: 110, z: -140 },
+          { id: 'competitor-analysis', name: '競爭分析', color: 0x7dd3fc, size: 6, x: 170, y: 40, z: -60 },
+          { id: 'product-strategy', name: '產品戰略', color: 0x7dd3fc, size: 6, x: 90, y: 100, z: -130 },
+          { id: 'mkt-swot', name: 'SWOT 分析', color: 0xbae6fd, size: 4, x: 240, y: 70, z: -30 },
+          { id: 'mkt-porter', name: 'Porter 五力', color: 0xbae6fd, size: 4, x: 220, y: 140, z: -170 },
+          { id: 'mkt-roadmap', name: '產品路線圖', color: 0xbae6fd, size: 4, x: 60, y: 140, z: -170 },
+          { id: 'user-research', name: '用戶研究', color: 0xa5b4fc, size: 6, x: -150, y: -140, z: 110 },
+          { id: 'requirement-gathering', name: '需求收集', color: 0xa5b4fc, size: 6, x: -50, y: -70, z: 140 },
+          { id: 'user-experience', name: '用戶體驗', color: 0xa5b4fc, size: 6, x: -110, y: -60, z: 40 },
+          { id: 'usr-interview', name: '用戶訪談', color: 0xc7d2fe, size: 4, x: -200, y: -180, z: 140 },
+          { id: 'usr-persona', name: 'Personas', color: 0xc7d2fe, size: 4, x: -120, y: -180, z: 80 },
+          { id: 'usr-moscow', name: 'MoSCoW 排序', color: 0xc7d2fe, size: 4, x: -20, y: -110, z: 180 },
+          { id: 'usr-journey', name: '用戶旅程圖', color: 0xc7d2fe, size: 4, x: -140, y: -30, z: 10 },
+          { id: 'dev-coordination', name: '開發協調', color: 0x6ee7b7, size: 6, x: 160, y: -130, z: 140 },
+          { id: 'launch-strategy', name: '上市策略', color: 0x6ee7b7, size: 6, x: 70, y: -50, z: 70 },
+          { id: 'performance-monitor', name: '性能監控', color: 0x6ee7b7, size: 6, x: 150, y: -110, z: 50 },
+          { id: 'exec-sprint', name: 'Sprint 規劃', color: 0xa7f3d0, size: 4, x: 210, y: -170, z: 170 },
+          { id: 'exec-ab', name: 'A/B 測試', color: 0xa7f3d0, size: 4, x: 200, y: -140, z: 20 },
+          { id: 'exec-kpi', name: 'KPI 儀表板', color: 0xa7f3d0, size: 4, x: 110, y: -150, z: 70 },
+        ],
+        edges: [['pm-center','pm-basics'],['pm-center','market-strategy'],['pm-center','user-needs'],['pm-center','execution'],['pm-basics','pm-concept'],['pm-basics','pm-role'],['pm-basics','pm-tools'],['pm-concept','pm-lifecycle'],['pm-concept','pm-okr'],['pm-tools','pm-jira'],['pm-tools','pm-figma'],['market-strategy','market-position'],['market-strategy','competitor-analysis'],['market-strategy','product-strategy'],['competitor-analysis','mkt-swot'],['competitor-analysis','mkt-porter'],['product-strategy','mkt-roadmap'],['user-needs','user-research'],['user-needs','requirement-gathering'],['user-needs','user-experience'],['user-research','usr-interview'],['user-research','usr-persona'],['requirement-gathering','usr-moscow'],['user-experience','usr-journey'],['execution','dev-coordination'],['execution','launch-strategy'],['execution','performance-monitor'],['dev-coordination','exec-sprint'],['launch-strategy','exec-ab'],['performance-monitor','exec-kpi']],
+      },
+      manufacturing: {
+        canvasId: 'knowledge-graph-mfg',
+        dataKey: 'manufacturing',
+        nodes: [
+          { id: 'mfg-center', name: '製造業知識', color: 0xf59e0b, size: 14, x: 0, y: 0, z: 0 },
+          { id: 'mfg-production', name: '生產管理', color: 0xfbbf24, size: 9, x: -130, y: 90, z: -70 },
+          { id: 'mfg-quality', name: '品質系統', color: 0x34d399, size: 9, x: 130, y: 70, z: -90 },
+          { id: 'mfg-supply', name: '供應鏈', color: 0x60a5fa, size: 9, x: -90, y: -100, z: 80 },
+          { id: 'mfg-equipment', name: '設備維護', color: 0xa78bfa, size: 9, x: 110, y: -80, z: 100 },
+          { id: 'mfg-lean', name: '精實生產', color: 0xfcd34d, size: 6, x: -190, y: 140, z: -110 },
+          { id: 'mfg-mrp', name: 'MRP 規劃', color: 0xfcd34d, size: 6, x: -170, y: 60, z: -130 },
+          { id: 'mfg-scheduling', name: '排程管理', color: 0xfcd34d, size: 6, x: -90, y: 130, z: -40 },
+          { id: 'mfg-kanban', name: '看板管理', color: 0xfef08a, size: 4, x: -250, y: 180, z: -140 },
+          { id: 'mfg-5s', name: '5S 管理', color: 0xfef08a, size: 4, x: -230, y: 100, z: -170 },
+          { id: 'mfg-vsm', name: '價值流圖', color: 0xfef08a, size: 4, x: -150, y: 180, z: -80 },
+          { id: 'mfg-iso', name: 'ISO 9001', color: 0x6ee7b7, size: 6, x: 190, y: 110, z: -140 },
+          { id: 'mfg-spc', name: 'SPC 管控', color: 0x6ee7b7, size: 6, x: 170, y: 40, z: -60 },
+          { id: 'mfg-fmea', name: 'FMEA 分析', color: 0x6ee7b7, size: 6, x: 90, y: 100, z: -130 },
+          { id: 'mfg-8d', name: '8D 解決法', color: 0xa7f3d0, size: 4, x: 240, y: 70, z: -30 },
+          { id: 'mfg-fishbone', name: '魚骨圖', color: 0xa7f3d0, size: 4, x: 220, y: 140, z: -170 },
+          { id: 'mfg-pdca', name: 'PDCA 循環', color: 0xa7f3d0, size: 4, x: 60, y: 140, z: -170 },
+          { id: 'mfg-vendor', name: '供應商管理', color: 0x93c5fd, size: 6, x: -150, y: -140, z: 110 },
+          { id: 'mfg-logistics', name: '物流管理', color: 0x93c5fd, size: 6, x: -50, y: -70, z: 140 },
+          { id: 'mfg-jit', name: 'JIT 策略', color: 0x93c5fd, size: 6, x: -110, y: -60, z: 40 },
+          { id: 'mfg-eval', name: '供應商評鑑', color: 0xbfdbfe, size: 4, x: -200, y: -180, z: 140 },
+          { id: 'mfg-asl', name: '合格供應清單', color: 0xbfdbfe, size: 4, x: -20, y: -110, z: 180 },
+          { id: 'mfg-tpm', name: 'TPM 保全', color: 0xc4b5fd, size: 6, x: 160, y: -130, z: 140 },
+          { id: 'mfg-oee', name: 'OEE 效率', color: 0xc4b5fd, size: 6, x: 70, y: -50, z: 70 },
+          { id: 'mfg-am', name: '自主保養', color: 0xddd6fe, size: 4, x: 210, y: -170, z: 170 },
+          { id: 'mfg-pm', name: '計畫保養', color: 0xddd6fe, size: 4, x: 200, y: -140, z: 20 },
+          { id: 'mfg-fta', name: '故障樹分析', color: 0xddd6fe, size: 4, x: 40, y: -90, z: 40 },
+        ],
+        edges: [['mfg-center','mfg-production'],['mfg-center','mfg-quality'],['mfg-center','mfg-supply'],['mfg-center','mfg-equipment'],['mfg-production','mfg-lean'],['mfg-production','mfg-mrp'],['mfg-production','mfg-scheduling'],['mfg-lean','mfg-kanban'],['mfg-lean','mfg-5s'],['mfg-lean','mfg-vsm'],['mfg-quality','mfg-iso'],['mfg-quality','mfg-spc'],['mfg-quality','mfg-fmea'],['mfg-spc','mfg-8d'],['mfg-spc','mfg-fishbone'],['mfg-fmea','mfg-pdca'],['mfg-supply','mfg-vendor'],['mfg-supply','mfg-logistics'],['mfg-supply','mfg-jit'],['mfg-vendor','mfg-eval'],['mfg-logistics','mfg-asl'],['mfg-equipment','mfg-tpm'],['mfg-equipment','mfg-oee'],['mfg-tpm','mfg-am'],['mfg-tpm','mfg-pm'],['mfg-oee','mfg-fta']],
+      },
+      'smart-mfg': {
+        canvasId: 'knowledge-graph-smfg',
+        dataKey: 'smart-mfg',
+        nodes: [
+          { id: 'smfg-center', name: '智慧製造知識', color: 0x0ea5e9, size: 14, x: 0, y: 0, z: 0 },
+          { id: 'smfg-industry40', name: '工業 4.0', color: 0x38bdf8, size: 9, x: -130, y: 90, z: -70 },
+          { id: 'smfg-iot', name: 'IoT 物聯網', color: 0x22d3ee, size: 9, x: 130, y: 70, z: -90 },
+          { id: 'smfg-data', name: '數據分析', color: 0xa78bfa, size: 9, x: -90, y: -100, z: 80 },
+          { id: 'smfg-automation', name: '自動化', color: 0xf472b6, size: 9, x: 110, y: -80, z: 100 },
+          { id: 'smfg-cps', name: 'CPS 系統', color: 0x7dd3fc, size: 6, x: -190, y: 140, z: -110 },
+          { id: 'smfg-twin', name: '數位孿生', color: 0x7dd3fc, size: 6, x: -170, y: 60, z: -130 },
+          { id: 'smfg-5g', name: '5G 通訊', color: 0x7dd3fc, size: 6, x: -90, y: 130, z: -40 },
+          { id: 'smfg-sense', name: '感知層', color: 0xbae6fd, size: 4, x: -250, y: 180, z: -140 },
+          { id: 'smfg-network', name: '網路層', color: 0xbae6fd, size: 4, x: -230, y: 100, z: -170 },
+          { id: 'smfg-app', name: '應用層', color: 0xbae6fd, size: 4, x: -150, y: 180, z: -80 },
+          { id: 'smfg-3dmodel', name: '3D 建模', color: 0xbae6fd, size: 4, x: -220, y: 30, z: -100 },
+          { id: 'smfg-mqtt', name: 'MQTT 協定', color: 0x67e8f9, size: 6, x: 190, y: 110, z: -140 },
+          { id: 'smfg-scada', name: 'SCADA 系統', color: 0x67e8f9, size: 6, x: 170, y: 40, z: -60 },
+          { id: 'smfg-opcua', name: 'OPC-UA', color: 0x67e8f9, size: 6, x: 90, y: 100, z: -130 },
+          { id: 'smfg-edge', name: '邊緣運算', color: 0xa5f3fc, size: 4, x: 240, y: 70, z: -30 },
+          { id: 'smfg-dashboard', name: '監控儀表板', color: 0xa5f3fc, size: 4, x: 220, y: 140, z: -170 },
+          { id: 'smfg-ml', name: '機器學習', color: 0xc4b5fd, size: 6, x: -150, y: -140, z: 110 },
+          { id: 'smfg-predict', name: '預測維護', color: 0xc4b5fd, size: 6, x: -50, y: -70, z: 140 },
+          { id: 'smfg-vision', name: '機器視覺', color: 0xc4b5fd, size: 6, x: -110, y: -60, z: 40 },
+          { id: 'smfg-supervised', name: '監督式學習', color: 0xddd6fe, size: 4, x: -200, y: -180, z: 140 },
+          { id: 'smfg-anomaly', name: '異常偵測', color: 0xddd6fe, size: 4, x: -20, y: -110, z: 180 },
+          { id: 'smfg-defect', name: '瑕疵檢測', color: 0xddd6fe, size: 4, x: -140, y: -30, z: 10 },
+          { id: 'smfg-cobot', name: '協作機器人', color: 0xf9a8d4, size: 6, x: 160, y: -130, z: 140 },
+          { id: 'smfg-agv', name: 'AGV 導引車', color: 0xf9a8d4, size: 6, x: 70, y: -50, z: 70 },
+          { id: 'smfg-plc', name: 'PLC 控制', color: 0xf9a8d4, size: 6, x: 150, y: -110, z: 50 },
+          { id: 'smfg-safety', name: '安全規範', color: 0xfce7f3, size: 4, x: 210, y: -170, z: 170 },
+          { id: 'smfg-path', name: '路徑規劃', color: 0xfce7f3, size: 4, x: 40, y: -90, z: 40 },
+        ],
+        edges: [['smfg-center','smfg-industry40'],['smfg-center','smfg-iot'],['smfg-center','smfg-data'],['smfg-center','smfg-automation'],['smfg-industry40','smfg-cps'],['smfg-industry40','smfg-twin'],['smfg-industry40','smfg-5g'],['smfg-cps','smfg-sense'],['smfg-cps','smfg-network'],['smfg-cps','smfg-app'],['smfg-twin','smfg-3dmodel'],['smfg-iot','smfg-mqtt'],['smfg-iot','smfg-scada'],['smfg-iot','smfg-opcua'],['smfg-scada','smfg-edge'],['smfg-scada','smfg-dashboard'],['smfg-data','smfg-ml'],['smfg-data','smfg-predict'],['smfg-data','smfg-vision'],['smfg-ml','smfg-supervised'],['smfg-predict','smfg-anomaly'],['smfg-vision','smfg-defect'],['smfg-automation','smfg-cobot'],['smfg-automation','smfg-agv'],['smfg-automation','smfg-plc'],['smfg-cobot','smfg-safety'],['smfg-agv','smfg-path']],
+      },
+      education: {
+        canvasId: 'knowledge-graph-edu',
+        dataKey: 'education',
+        nodes: [
+          { id: 'edu-center', name: '教育知識', color: 0x8b5cf6, size: 14, x: 0, y: 0, z: 0 },
+          { id: 'edu-design', name: '教學設計', color: 0xa78bfa, size: 9, x: -130, y: 90, z: -70 },
+          { id: 'edu-theory', name: '學習理論', color: 0xc084fc, size: 9, x: 130, y: 70, z: -90 },
+          { id: 'edu-tech', name: '教育科技', color: 0x38bdf8, size: 9, x: -90, y: -100, z: 80 },
+          { id: 'edu-assessment', name: '評量與回饋', color: 0x34d399, size: 9, x: 110, y: -80, z: 100 },
+          { id: 'edu-addie', name: 'ADDIE 模型', color: 0xc4b5fd, size: 6, x: -190, y: 140, z: -110 },
+          { id: 'edu-pbl', name: '專題式學習', color: 0xc4b5fd, size: 6, x: -170, y: 60, z: -130 },
+          { id: 'edu-flip', name: '翻轉教室', color: 0xc4b5fd, size: 6, x: -90, y: 130, z: -40 },
+          { id: 'edu-analyze', name: '需求分析', color: 0xddd6fe, size: 4, x: -250, y: 180, z: -140 },
+          { id: 'edu-develop', name: '教材開發', color: 0xddd6fe, size: 4, x: -230, y: 100, z: -170 },
+          { id: 'edu-evaluate', name: '成效評鑑', color: 0xddd6fe, size: 4, x: -150, y: 180, z: -80 },
+          { id: 'edu-scaffold', name: '鷹架策略', color: 0xddd6fe, size: 4, x: -220, y: 30, z: -100 },
+          { id: 'edu-construct', name: '建構主義', color: 0xd8b4fe, size: 6, x: 190, y: 110, z: -140 },
+          { id: 'edu-cognitive', name: '認知負荷', color: 0xd8b4fe, size: 6, x: 170, y: 40, z: -60 },
+          { id: 'edu-social', name: '社會學習', color: 0xd8b4fe, size: 6, x: 90, y: 100, z: -130 },
+          { id: 'edu-zone', name: 'ZPD 近側區', color: 0xe9d5ff, size: 4, x: 240, y: 70, z: -30 },
+          { id: 'edu-meta', name: '後設認知', color: 0xe9d5ff, size: 4, x: 220, y: 140, z: -170 },
+          { id: 'edu-collab', name: '協作學習', color: 0xe9d5ff, size: 4, x: 60, y: 140, z: -170 },
+          { id: 'edu-lms', name: 'LMS 平台', color: 0x7dd3fc, size: 6, x: -150, y: -140, z: 110 },
+          { id: 'edu-ai', name: 'AI 輔助教學', color: 0x7dd3fc, size: 6, x: -50, y: -70, z: 140 },
+          { id: 'edu-gamify', name: '遊戲化學習', color: 0x7dd3fc, size: 6, x: -110, y: -60, z: 40 },
+          { id: 'edu-moodle', name: 'Moodle', color: 0xbae6fd, size: 4, x: -200, y: -180, z: 140 },
+          { id: 'edu-adaptive', name: '自適應平台', color: 0xbae6fd, size: 4, x: -20, y: -110, z: 180 },
+          { id: 'edu-badge', name: '數位徽章', color: 0xbae6fd, size: 4, x: -140, y: -30, z: 10 },
+          { id: 'edu-rubric', name: '評分量尺', color: 0x6ee7b7, size: 6, x: 160, y: -130, z: 140 },
+          { id: 'edu-portfolio', name: '學習歷程', color: 0x6ee7b7, size: 6, x: 70, y: -50, z: 70 },
+          { id: 'edu-peer', name: '同儕互評', color: 0x6ee7b7, size: 6, x: 150, y: -110, z: 50 },
+          { id: 'edu-analytic', name: '分析型量尺', color: 0xa7f3d0, size: 4, x: 210, y: -170, z: 170 },
+          { id: 'edu-holistic', name: '整體型量尺', color: 0xa7f3d0, size: 4, x: 200, y: -140, z: 20 },
+          { id: 'edu-eportfolio', name: 'e-Portfolio', color: 0xa7f3d0, size: 4, x: 40, y: -90, z: 40 },
+        ],
+        edges: [['edu-center','edu-design'],['edu-center','edu-theory'],['edu-center','edu-tech'],['edu-center','edu-assessment'],['edu-design','edu-addie'],['edu-design','edu-pbl'],['edu-design','edu-flip'],['edu-addie','edu-analyze'],['edu-addie','edu-develop'],['edu-addie','edu-evaluate'],['edu-pbl','edu-scaffold'],['edu-theory','edu-construct'],['edu-theory','edu-cognitive'],['edu-theory','edu-social'],['edu-construct','edu-zone'],['edu-cognitive','edu-meta'],['edu-social','edu-collab'],['edu-tech','edu-lms'],['edu-tech','edu-ai'],['edu-tech','edu-gamify'],['edu-lms','edu-moodle'],['edu-ai','edu-adaptive'],['edu-gamify','edu-badge'],['edu-assessment','edu-rubric'],['edu-assessment','edu-portfolio'],['edu-assessment','edu-peer'],['edu-rubric','edu-analytic'],['edu-rubric','edu-holistic'],['edu-portfolio','edu-eportfolio']],
+      },
+      finance: {
+        canvasId: 'knowledge-graph-fin',
+        dataKey: 'finance',
+        nodes: [
+          { id: 'fin-center', name: '金融知識', color: 0xf59e0b, size: 14, x: 0, y: 0, z: 0 },
+          { id: 'fin-risk', name: '風險管理', color: 0xef4444, size: 9, x: -130, y: 90, z: -70 },
+          { id: 'fin-compliance', name: '合規法規', color: 0x3b82f6, size: 9, x: 130, y: 70, z: -90 },
+          { id: 'fin-fintech', name: '金融科技', color: 0x8b5cf6, size: 9, x: -90, y: -100, z: 80 },
+          { id: 'fin-investment', name: '投資策略', color: 0x10b981, size: 9, x: 110, y: -80, z: 100 },
+          { id: 'fin-credit', name: '信用風險', color: 0xfca5a5, size: 6, x: -190, y: 140, z: -110 },
+          { id: 'fin-market', name: '市場風險', color: 0xfca5a5, size: 6, x: -170, y: 60, z: -130 },
+          { id: 'fin-operational', name: '作業風險', color: 0xfca5a5, size: 6, x: -90, y: 130, z: -40 },
+          { id: 'fin-rating', name: '信用評級', color: 0xfecaca, size: 4, x: -250, y: 180, z: -140 },
+          { id: 'fin-pd', name: '違約機率 PD', color: 0xfecaca, size: 4, x: -230, y: 100, z: -170 },
+          { id: 'fin-var', name: 'VaR 模型', color: 0xfecaca, size: 4, x: -150, y: 180, z: -80 },
+          { id: 'fin-stress', name: '壓力測試', color: 0xfecaca, size: 4, x: -220, y: 30, z: -100 },
+          { id: 'fin-basel', name: 'Basel III', color: 0x93c5fd, size: 6, x: 190, y: 110, z: -140 },
+          { id: 'fin-aml', name: '反洗錢', color: 0x93c5fd, size: 6, x: 170, y: 40, z: -60 },
+          { id: 'fin-gdpr', name: '個資保護', color: 0x93c5fd, size: 6, x: 90, y: 100, z: -130 },
+          { id: 'fin-capital', name: '資本適足', color: 0xbfdbfe, size: 4, x: 240, y: 70, z: -30 },
+          { id: 'fin-liquidity', name: '流動性比率', color: 0xbfdbfe, size: 4, x: 220, y: 140, z: -170 },
+          { id: 'fin-kyc', name: 'KYC 流程', color: 0xbfdbfe, size: 4, x: 60, y: 140, z: -170 },
+          { id: 'fin-openbank', name: '開放銀行', color: 0xc4b5fd, size: 6, x: -150, y: -140, z: 110 },
+          { id: 'fin-blockchain', name: '區塊鏈', color: 0xc4b5fd, size: 6, x: -50, y: -70, z: 140 },
+          { id: 'fin-payment', name: '支付系統', color: 0xc4b5fd, size: 6, x: -110, y: -60, z: 40 },
+          { id: 'fin-api', name: 'API 管理', color: 0xddd6fe, size: 4, x: -200, y: -180, z: 140 },
+          { id: 'fin-defi', name: 'DeFi 應用', color: 0xddd6fe, size: 4, x: -20, y: -110, z: 180 },
+          { id: 'fin-wallet', name: '數位錢包', color: 0xddd6fe, size: 4, x: -140, y: -30, z: 10 },
+          { id: 'fin-esg', name: 'ESG 投資', color: 0x6ee7b7, size: 6, x: 160, y: -130, z: 140 },
+          { id: 'fin-asset', name: '資產配置', color: 0x6ee7b7, size: 6, x: 70, y: -50, z: 70 },
+          { id: 'fin-technical', name: '技術分析', color: 0x6ee7b7, size: 6, x: 150, y: -110, z: 50 },
+          { id: 'fin-env', name: '環境 (E)', color: 0xa7f3d0, size: 4, x: 210, y: -170, z: 170 },
+          { id: 'fin-social', name: '社會 (S)', color: 0xa7f3d0, size: 4, x: 200, y: -140, z: 20 },
+          { id: 'fin-govern', name: '治理 (G)', color: 0xa7f3d0, size: 4, x: 40, y: -90, z: 40 },
+        ],
+        edges: [['fin-center','fin-risk'],['fin-center','fin-compliance'],['fin-center','fin-fintech'],['fin-center','fin-investment'],['fin-risk','fin-credit'],['fin-risk','fin-market'],['fin-risk','fin-operational'],['fin-credit','fin-rating'],['fin-credit','fin-pd'],['fin-market','fin-var'],['fin-operational','fin-stress'],['fin-compliance','fin-basel'],['fin-compliance','fin-aml'],['fin-compliance','fin-gdpr'],['fin-basel','fin-capital'],['fin-basel','fin-liquidity'],['fin-aml','fin-kyc'],['fin-fintech','fin-openbank'],['fin-fintech','fin-blockchain'],['fin-fintech','fin-payment'],['fin-openbank','fin-api'],['fin-blockchain','fin-defi'],['fin-payment','fin-wallet'],['fin-investment','fin-esg'],['fin-investment','fin-asset'],['fin-investment','fin-technical'],['fin-esg','fin-env'],['fin-esg','fin-social'],['fin-esg','fin-govern']],
+      },
+      government: {
+        canvasId: 'knowledge-graph-gov',
+        dataKey: 'government',
+        nodes: [
+          { id: 'gov-center', name: '公家機關知識', color: 0x64748b, size: 14, x: 0, y: 0, z: 0 },
+          { id: 'gov-policy', name: '政策制定', color: 0x94a3b8, size: 9, x: -130, y: 90, z: -70 },
+          { id: 'gov-budget', name: '預算財務', color: 0xfbbf24, size: 9, x: 130, y: 70, z: -90 },
+          { id: 'gov-service', name: '公共服務', color: 0x38bdf8, size: 9, x: -90, y: -100, z: 80 },
+          { id: 'gov-legal', name: '法規合規', color: 0xa78bfa, size: 9, x: 110, y: -80, z: 100 },
+          { id: 'gov-analysis', name: '政策分析', color: 0xc4c4cc, size: 6, x: -190, y: 140, z: -110 },
+          { id: 'gov-stakeholder', name: '利害關係人', color: 0xc4c4cc, size: 6, x: -170, y: 60, z: -130 },
+          { id: 'gov-ria', name: '影響評估', color: 0xc4c4cc, size: 6, x: -90, y: 130, z: -40 },
+          { id: 'gov-cba', name: '成本效益', color: 0xe2e2e8, size: 4, x: -250, y: 180, z: -140 },
+          { id: 'gov-survey', name: '民意調查', color: 0xe2e2e8, size: 4, x: -230, y: 100, z: -170 },
+          { id: 'gov-consult', name: '公眾諮詢', color: 0xe2e2e8, size: 4, x: -150, y: 180, z: -80 },
+          { id: 'gov-zbb', name: '零基預算', color: 0xfcd34d, size: 6, x: 190, y: 110, z: -140 },
+          { id: 'gov-procurement', name: '政府採購', color: 0xfcd34d, size: 6, x: 170, y: 40, z: -60 },
+          { id: 'gov-audit', name: '財務稽核', color: 0xfcd34d, size: 6, x: 90, y: 100, z: -130 },
+          { id: 'gov-decision', name: '決策單元', color: 0xfef08a, size: 4, x: 240, y: 70, z: -30 },
+          { id: 'gov-rank', name: '方案排序', color: 0xfef08a, size: 4, x: 220, y: 140, z: -170 },
+          { id: 'gov-tender', name: '公開招標', color: 0xfef08a, size: 4, x: 60, y: 140, z: -170 },
+          { id: 'gov-egov', name: '數位政府', color: 0x7dd3fc, size: 6, x: -150, y: -140, z: 110 },
+          { id: 'gov-opendata', name: '開放資料', color: 0x7dd3fc, size: 6, x: -50, y: -70, z: 140 },
+          { id: 'gov-onestop', name: '一站式服務', color: 0x7dd3fc, size: 6, x: -110, y: -60, z: 40 },
+          { id: 'gov-esign', name: '電子簽章', color: 0xbae6fd, size: 4, x: -200, y: -180, z: 140 },
+          { id: 'gov-online', name: '線上申辦', color: 0xbae6fd, size: 4, x: -20, y: -110, z: 180 },
+          { id: 'gov-api', name: '資料 API', color: 0xbae6fd, size: 4, x: -140, y: -30, z: 10 },
+          { id: 'gov-admin', name: '行政程序', color: 0xc4b5fd, size: 6, x: 160, y: -130, z: 140 },
+          { id: 'gov-foi', name: '資訊公開', color: 0xc4b5fd, size: 6, x: 70, y: -50, z: 70 },
+          { id: 'gov-cross', name: '跨機關協調', color: 0xc4b5fd, size: 6, x: 150, y: -110, z: 50 },
+          { id: 'gov-hearing', name: '聽證制度', color: 0xddd6fe, size: 4, x: 210, y: -170, z: 170 },
+          { id: 'gov-remedy', name: '行政救濟', color: 0xddd6fe, size: 4, x: 200, y: -140, z: 20 },
+          { id: 'gov-mou', name: '機關合作備忘', color: 0xddd6fe, size: 4, x: 40, y: -90, z: 40 },
+        ],
+        edges: [['gov-center','gov-policy'],['gov-center','gov-budget'],['gov-center','gov-service'],['gov-center','gov-legal'],['gov-policy','gov-analysis'],['gov-policy','gov-stakeholder'],['gov-policy','gov-ria'],['gov-analysis','gov-cba'],['gov-stakeholder','gov-survey'],['gov-ria','gov-consult'],['gov-budget','gov-zbb'],['gov-budget','gov-procurement'],['gov-budget','gov-audit'],['gov-zbb','gov-decision'],['gov-zbb','gov-rank'],['gov-procurement','gov-tender'],['gov-service','gov-egov'],['gov-service','gov-opendata'],['gov-service','gov-onestop'],['gov-egov','gov-esign'],['gov-egov','gov-online'],['gov-opendata','gov-api'],['gov-legal','gov-admin'],['gov-legal','gov-foi'],['gov-legal','gov-cross'],['gov-admin','gov-hearing'],['gov-admin','gov-remedy'],['gov-cross','gov-mou']],
+      },
+    };
+    const kgInstances = {};
+
+    function initKG3D(domainKey) {
+      domainKey = domainKey || 'pm';
+      const graphConfig = domainGraphData[domainKey];
+      if (!graphConfig) return;
+
+      const canvas = document.getElementById(graphConfig.canvasId);
+      if (!canvas || !window.THREE || kgInstances[domainKey]) return;
+
+      const width = canvas.parentElement.clientWidth;
+      const height = 600;
+      canvas.width = width * window.devicePixelRatio;
+      canvas.height = height * window.devicePixelRatio;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+
+      // 場景 / Scene
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050510);
+      scene.fog = new THREE.FogExp2(0x050510, 0.0015);
+
+      // 相機 / Camera
+      const camera = new THREE.PerspectiveCamera(60, width / height, 1, 5000);
+      camera.position.set(0, 120, 350);
+
+      // 渲染器 / Renderer
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      // 控制器 / Controls
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.rotateSpeed = 0.5;
+      controls.zoomSpeed = 0.8;
+      controls.minDistance = 100;
+      controls.maxDistance = 800;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.3;
+
+      // 光源 / Lights
+      scene.add(new THREE.AmbientLight(0x333366, 2));
+      const pointLight = new THREE.PointLight(0x3b82f6, 3, 600);
+      pointLight.position.set(0, 0, 0);
+      scene.add(pointLight);
+      const pointLight2 = new THREE.PointLight(0x60a5fa, 2, 500);
+      pointLight2.position.set(100, 100, 100);
+      scene.add(pointLight2);
+
+      const nodesData = graphConfig.nodes;
+      const edgesData = graphConfig.edges;
+      const lookupNodeData = (nodeId) => {
+        if (graphConfig.dataKey && allKnowledgeNodeData[graphConfig.dataKey]) return allKnowledgeNodeData[graphConfig.dataKey][nodeId];
+        return knowledgeNodeData[nodeId];
+      };
+
+      const nodeMap = {};
+
+      // 創建發光球體材質 / Glow sphere
+      function createGlowSphere(node) {
+        const geo = new THREE.SphereGeometry(node.size, 32, 32);
+        const mat = new THREE.MeshPhongMaterial({
+          color: node.color,
+          emissive: node.color,
+          emissiveIntensity: 0.6,
+          transparent: true,
+          opacity: 0.9,
+          shininess: 100,
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(node.x, node.y, node.z);
+        mesh.userData = { id: node.id, name: node.name };
+
+        // 外部光暈 / Outer glow
+        const glowGeo = new THREE.SphereGeometry(node.size * 1.5, 16, 16);
+        const glowMat = new THREE.MeshBasicMaterial({
+          color: node.color,
+          transparent: true,
+          opacity: 0.1,
+          depthWrite: false,
+        });
+        const glow = new THREE.Mesh(glowGeo, glowMat);
+        mesh.add(glow);
+
+        scene.add(mesh);
+        nodeMap[node.id] = mesh;
+        return mesh;
+      }
+
+      // 創建文字標籤 / Text label
+      function createLabel(node) {
+        const cnv = document.createElement('canvas');
+        cnv.width = 256;
+        cnv.height = 64;
+        const ctx = cnv.getContext('2d');
+        ctx.font = 'bold 24px Inter, sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.name, 128, 32);
+
+        const tex = new THREE.CanvasTexture(cnv);
+        const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.85 });
+        const sprite = new THREE.Sprite(spriteMat);
+        sprite.position.set(node.x, node.y + node.size * 2 + 12, node.z);
+        sprite.scale.set(50, 12, 1);
+        sprite.renderOrder = 999;
+        scene.add(sprite);
+        return sprite;
+      }
+
+      // 創建連線 / Edges
+      function createEdge(fromId, toId) {
+        const from = nodeMap[fromId];
+        const to = nodeMap[toId];
+        if (!from || !to) return;
+
+        const points = [from.position, to.position];
+        const geo = new THREE.BufferGeometry().setFromPoints(points);
+        const mat = new THREE.LineBasicMaterial({
+          color: 0x3b82f6,
+          transparent: true,
+          opacity: 0.25,
+        });
+        const line = new THREE.Line(geo, mat);
+        line.userData = { fromId, toId };
+        scene.add(line);
+        return line;
+      }
+
+      // 背景粒子星空 / Background particles
+      function createStars() {
+        const starsGeo = new THREE.BufferGeometry();
+        const positions = [];
+        for (let i = 0; i < 2000; i++) {
+          positions.push(
+            (Math.random() - 0.5) * 2000,
+            (Math.random() - 0.5) * 2000,
+            (Math.random() - 0.5) * 2000
+          );
+        }
+        starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0x4466aa, size: 0.8, transparent: true, opacity: 0.6 });
+        scene.add(new THREE.Points(starsGeo, starsMat));
+      }
+
+      // 初始化所有元素 / Build scene
+      createStars();
+      const labels = [];
+      nodesData.forEach(n => {
+        createGlowSphere(n);
+        labels.push({ sprite: createLabel(n), node: n });
+      });
+      const lines = [];
+      edgesData.forEach(([f, t]) => {
+        const line = createEdge(f, t);
+        if (line) lines.push(line);
+      });
+
+      // 節點緩慢飄動 / Slow floating animation
+      const floatOffsets = nodesData.map(() => ({
+        sx: Math.random() * 6.28,
+        sy: Math.random() * 6.28,
+        sz: Math.random() * 6.28,
+        ax: 0.3 + Math.random() * 0.5,
+        ay: 0.3 + Math.random() * 0.5,
+        az: 0.3 + Math.random() * 0.5,
+      }));
+
+      // Raycaster for clicking
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const meshes = Object.values(nodeMap);
+        const intersects = raycaster.intersectObjects(meshes);
+        if (intersects.length > 0) {
+          const nodeId = intersects[0].object.userData.id;
+          const nodeData = lookupNodeData(nodeId);
+          if (nodeData) showKnowledgeModal(nodeData);
+        }
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const meshes = Object.values(nodeMap);
+        const intersects = raycaster.intersectObjects(meshes);
+        canvas.style.cursor = intersects.length > 0 ? 'pointer' : 'grab';
+      });
+
+      // 按鈕控制 — 使用 class 而非 id（支持多個圖譜）
+      const wrapper = canvas.closest('.knowledge-graph-wrapper');
+      wrapper?.querySelector('.graph-reset-btn')?.addEventListener('click', () => {
+        camera.position.set(0, 120, 350);
+        controls.target.set(0, 0, 0);
+        controls.update();
+      });
+
+      let autoRotating = true;
+      const autoBtn = wrapper?.querySelector('.graph-auto-btn');
+      autoBtn?.addEventListener('click', () => {
+        autoRotating = !autoRotating;
+        controls.autoRotate = autoRotating;
+        autoBtn.textContent = autoRotating ? '⏸️ 停止旋轉' : '🔁 自動旋轉';
+      });
+
+      // 動畫迴圈 / Animation loop
+      let time = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        time += 0.005;
+
+        // 飄動效果 / Float effect
+        nodesData.forEach((n, i) => {
+          const mesh = nodeMap[n.id];
+          if (!mesh) return;
+          const f = floatOffsets[i];
+          mesh.position.x = n.x + Math.sin(time * f.ax + f.sx) * 3;
+          mesh.position.y = n.y + Math.sin(time * f.ay + f.sy) * 3;
+          mesh.position.z = n.z + Math.cos(time * f.az + f.sz) * 3;
+
+          // 更新標籤位置 / Update label
+          if (labels[i]) {
+            labels[i].sprite.position.set(
+              mesh.position.x,
+              mesh.position.y + n.size * 2 + 12,
+              mesh.position.z
+            );
+          }
+        });
+
+        // 更新連線 / Update edges
+        lines.forEach(line => {
+          const from = nodeMap[line.userData.fromId];
+          const to = nodeMap[line.userData.toId];
+          if (from && to) {
+            const pos = line.geometry.attributes.position;
+            pos.setXYZ(0, from.position.x, from.position.y, from.position.z);
+            pos.setXYZ(1, to.position.x, to.position.y, to.position.z);
+            pos.needsUpdate = true;
+          }
+        });
+
+        // 脈動光源 / Pulsing light
+        pointLight.intensity = 3 + Math.sin(time * 2) * 1;
+
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      // 響應式 / Resize
+      const resizeObserver = new ResizeObserver(() => {
+        const w = canvas.parentElement.clientWidth;
+        canvas.width = w * window.devicePixelRatio;
+        canvas.height = height * window.devicePixelRatio;
+        canvas.style.width = w + 'px';
+        canvas.style.height = height + 'px';
+        camera.aspect = w / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, height);
+      });
+      resizeObserver.observe(canvas.parentElement);
+
+      kgInstances[domainKey] = { scene, camera, renderer, controls };
+    }
+
+    function showKnowledgeModal(nodeData) {
+      const modal = document.getElementById('knowledge-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalBody = document.getElementById('modal-body');
+
+      modalTitle.textContent = nodeData.title;
+
+      let bodyHtml = '';
+      nodeData.sections.forEach(section => {
+        bodyHtml += `
+          <div class="modal-section">
+            <div class="modal-section-title">
+              <span>▸</span> ${section.name}
+            </div>
+            <div class="modal-section-content">
+              ${section.items.map(item => `<div class="modal-item">• ${item}</div>`).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      modalBody.innerHTML = bodyHtml;
+      modal.classList.remove('hidden');
+      modal.classList.add('active');
+    }
+
+    function hideKnowledgeModal() {
+      const modal = document.getElementById('knowledge-modal');
+      modal.classList.remove('active');
+      modal.classList.add('hidden');
+    }
+
+    // 模態框事件監聽
+    document.getElementById('modal-close')?.addEventListener('click', hideKnowledgeModal);
+    document.getElementById('knowledge-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'knowledge-modal' || e.target.classList.contains('modal-overlay')) {
+        hideKnowledgeModal();
+      }
+    });
+
+    // ── Domain Tab Switching ──
+    function setupDomainTabs() {
+      const checkTabs = setInterval(() => {
+        const tabs = document.querySelectorAll('.domain-tab');
+        if (tabs.length > 0) {
+          clearInterval(checkTabs);
+          tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const tabName = tab.dataset.tab;
+              const domainPage = tab.closest('.domain-page');
+
+              // 移除所有標籤的 active 狀態
+              domainPage.querySelectorAll('.domain-tab').forEach(t => t.classList.remove('active'));
+
+              // 隱藏所有內容
+              domainPage.querySelectorAll('.domain-tab-content').forEach(content => {
+                content.classList.remove('active');
+              });
+
+              // 激活點擊的標籤和對應內容
+              tab.classList.add('active');
+              const content = document.getElementById(`tab-${tabName}`);
+              if (content) {
+                content.classList.add('active');
+              }
+
+              // 切換到知識圖譜標籤時初始化 3D
+              const kgTabMap = {
+                'knowledge': 'pm', 'mfg-knowledge': 'manufacturing',
+                'smfg-knowledge': 'smart-mfg', 'edu-knowledge': 'education',
+                'fin-knowledge': 'finance', 'gov-knowledge': 'government',
+              };
+              if (kgTabMap[tabName]) {
+                setTimeout(() => initKG3D(kgTabMap[tabName]), 100);
+              }
+            });
+          });
+        }
+      }, 100);
+    }
+
+    // 初始化領域導航
+    setupDomainNavigation();
+    setupHomeNavigation();
+    setupDomainTabs();
+    setupKnowledgeGraph();
+
+    // 頁面加載時恢復上次選擇的領域
+    const savedDomain = localStorage.getItem('gs-current-domain');
+    if (savedDomain) {
+      setTimeout(() => {
+        showDomainPage(savedDomain);
+      }, 500);
+    }
+
+    // 添加 CSS 類 'hidden' 和 'active' 的輔助樣式（如果尚未定義）
+    const styleSheet = document.styleSheets[0];
+    if (styleSheet && !Array.from(styleSheet.cssRules).some(r => r.selectorText === '.hidden')) {
+      styleSheet.insertRule('.hidden { display: none !important; }', styleSheet.cssRules.length);
+    }
   </script>
 
 </body>

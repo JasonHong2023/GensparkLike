@@ -38,7 +38,24 @@
 | 庫 / Library | 版本 / Version | 用途 / Purpose | 來源 / Source |
 |---|---|---|---|
 | **marked.js** | ^9.0.0 | Markdown 解析渲染 | jsDelivr CDN |
+| **Three.js** | 0.128.0 | 3D 場景渲染（WebGL） | unpkg CDN |
+| **OrbitControls** | 0.128.0 | 3D 視角拖拉旋轉控制 | unpkg CDN（Three.js 附屬） |
 | **Google Fonts** | latest | 字體堆疊（可選） | fonts.googleapis.com |
+
+### 3D 知識圖譜技術棧 / 3D Knowledge Graph Tech
+
+| 技術 / Technology | 說明 / Description |
+|---|---|
+| **Three.js** | JavaScript 3D 圖形庫，建立場景、相機、渲染器 |
+| **WebGL** | 瀏覽器原生 GPU 加速 3D 渲染，由 Three.js 封裝 |
+| **OrbitControls** | Three.js 附屬模組，實現滑鼠拖拉旋轉和滾輪縮放 |
+| **MeshPhongMaterial** | 節點的發光材質，支持環境光和點光源反射 |
+| **CanvasTexture + Sprite** | 將 Canvas 2D 文字轉為 3D 空間中的標籤 |
+| **Raycaster** | 從滑鼠座標射出射線，偵測點擊了哪個 3D 節點 |
+| **requestAnimationFrame** | 瀏覽器原生的每幀動畫迴圈（節點飄動 + 自動旋轉） |
+| **FogExp2** | 指數霧效果，遠處節點淡出，增加空間深度感 |
+| **PointsMaterial** | 2000 個隨機粒子組成的背景星空 |
+| **ResizeObserver** | 監聽容器尺寸變化，實現響應式 3D 畫布 |
 
 ### 內部依賴
 
