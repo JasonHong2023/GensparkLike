@@ -1087,8 +1087,8 @@
       <div class="nav-item" draggable="true" data-nav-id="claw"><span class="nav-icon">🦖</span><span class="nav-label">Claw</span></div>
       <div class="nav-item" draggable="true" data-nav-id="workflow"><span class="nav-icon">🔗</span><span class="nav-label">工作流程</span></div>
       <div class="nav-item" draggable="true" data-nav-id="drive"><span class="nav-icon">📁</span><span class="nav-label">雲端硬碟</span></div>
-      <div class="nav-item" data-nav-id="mailbox"><span class="nav-icon">✉️</span><span class="nav-label">郵箱</span></div>
-      <div class="nav-item" data-nav-id="workbench"><span class="nav-icon">🛠️</span><span class="nav-label">工作臺</span></div>
+      <div class="nav-item" draggable="true" data-nav-id="mailbox"><span class="nav-icon">✉️</span><span class="nav-label">郵箱</span></div>
+      <div class="nav-item" draggable="true" data-nav-id="workbench"><span class="nav-icon">🛠️</span><span class="nav-label">工作臺</span></div>
       <div class="nav-item" id="nav-more"><span class="nav-icon">•••</span><span class="nav-label">更多</span></div>
     </div>
     <div class="more-popover hidden" id="more-popover"></div>
@@ -1622,13 +1622,12 @@
 
     function applyNavOrder() {
       const navTop = document.querySelector('.nav-top');
-      const trailingAnchor = document.querySelector('[data-nav-id="mailbox"]') || document.getElementById('nav-more');
-      if (!navTop || !trailingAnchor) return;
+      const moreItem = document.getElementById('nav-more');
+      if (!navTop || !moreItem) return;
       const order = getNavOrder();
       if (!order) return;
       const items = [...navTop.querySelectorAll('[data-nav-id]')].filter(el =>
-        el.dataset.navId !== 'new' && el.dataset.navId !== 'home' &&
-        el.dataset.navId !== 'mailbox' && el.dataset.navId !== 'workbench'
+        el.dataset.navId !== 'new' && el.dataset.navId !== 'home'
       );
       items.sort((a, b) => {
         const ai = order.indexOf(a.dataset.navId);
@@ -1638,7 +1637,7 @@
         if (bi === -1) return -1;
         return ai - bi;
       });
-      items.forEach(el => trailingAnchor.parentNode.insertBefore(el, trailingAnchor));
+      items.forEach(el => moreItem.parentNode.insertBefore(el, moreItem));
     }
 
     function setupNavDrag() {
@@ -1690,9 +1689,9 @@
         target.classList.remove('drag-over');
         if (target.dataset.navId === 'new' || target.dataset.navId === 'home') return;
 
-        // Dragging from popover → unhide domain item and insert at drop position
+        // Dragging from popover → unhide hidden item and insert at drop position
         if (dragFromPopover) {
-          const hiddenItem = document.querySelector(`.domain-nav-item[data-domain-id="${dragFromPopover}"]`);
+          const hiddenItem = document.querySelector(`[data-nav-id="${dragFromPopover}"]`);
           if (hiddenItem) {
             hiddenItem.style.removeProperty('display');
             target.parentNode.insertBefore(hiddenItem, target);
@@ -1721,8 +1720,8 @@
       const ids = getEnabledDomains();
       document.querySelectorAll('.domain-nav-item').forEach(el => el.remove());
       const moreItem = document.getElementById('nav-more');
-      const trailingAnchor = document.querySelector('[data-nav-id="mailbox"]') || moreItem;
       if (!moreItem) return;
+      const anchor = document.querySelector('[data-nav-id="mailbox"]') || moreItem;
       ids.forEach(id => {
         const d = DOMAINS.find(x => x.id === id);
         if (!d) return;
@@ -1732,13 +1731,13 @@
         el.dataset.navId = id;
         el.dataset.domainId = id;
         el.innerHTML = `<span class="nav-icon">${d.icon}</span><span class="nav-label">${d.label}</span>`;
-        trailingAnchor.parentNode.insertBefore(el, trailingAnchor);
+        anchor.parentNode.insertBefore(el, anchor);
       });
       applyNavOrder();
       requestAnimationFrame(checkNavOverflow);
     }
 
-    let hiddenDomainItems = [];
+    let hiddenNavItems = [];
 
     function checkNavOverflow() {
       const navTop = document.querySelector('.nav-top');
@@ -1746,25 +1745,28 @@
       const popover = document.getElementById('more-popover');
       if (!navTop || !moreItem || !popover) return;
 
-      // Unhide all domain items first
-      document.querySelectorAll('.domain-nav-item').forEach(el => el.style.removeProperty('display'));
-      hiddenDomainItems = [];
+      const ovfSel = '.domain-nav-item, [data-nav-id="mailbox"], [data-nav-id="workbench"]';
+      document.querySelectorAll(ovfSel).forEach(el => el.style.removeProperty('display'));
+      hiddenNavItems = [];
 
       if (navTop.scrollHeight > navTop.clientHeight) {
-        const items = [...navTop.querySelectorAll('.domain-nav-item')].reverse();
+        const items = [...navTop.querySelectorAll(ovfSel)].reverse();
         for (const el of items) {
           if (navTop.scrollHeight <= navTop.clientHeight) break;
-          const id = el.dataset.domainId;
-          if (id) hiddenDomainItems.push(id);
+          const id = el.dataset.navId;
+          if (id) hiddenNavItems.push(id);
           el.style.display = 'none';
         }
-        hiddenDomainItems.reverse();
+        hiddenNavItems.reverse();
       }
 
-      popover.innerHTML = hiddenDomainItems.map(id => {
+      const extras = { mailbox: { icon: '✉️', label: '郵箱' }, workbench: { icon: '🛠️', label: '工作臺' } };
+      popover.innerHTML = hiddenNavItems.map(id => {
         const d = DOMAINS.find(x => x.id === id);
-        if (!d) return '';
-        return `<div class="more-popover-item" draggable="true" data-nav-id="${d.id}" data-domain-id="${d.id}"><span class="nav-icon">${d.icon}</span>${d.label}</div>`;
+        if (d) return `<div class="more-popover-item" draggable="true" data-nav-id="${d.id}" data-domain-id="${d.id}"><span class="nav-icon">${d.icon}</span>${d.label}</div>`;
+        const e = extras[id];
+        if (e) return `<div class="more-popover-item" draggable="true" data-nav-id="${id}" data-domain-id="${id}"><span class="nav-icon">${e.icon}</span>${e.label}</div>`;
+        return '';
       }).join('');
     }
 
@@ -1841,13 +1843,12 @@
         if (!item) return;
         const id = item.dataset.domainId;
         if (!id) return;
-        // Click popover item → unhide and insert before trailing anchor
-        const hiddenItem = document.querySelector(`.domain-nav-item[data-domain-id="${id}"]`);
+        const hiddenItem = document.querySelector(`[data-nav-id="${id}"]`);
         if (hiddenItem) {
           hiddenItem.style.removeProperty('display');
-          const trailingAnchor = document.querySelector('[data-nav-id="mailbox"]') || document.getElementById('nav-more');
-          if (trailingAnchor) {
-            trailingAnchor.parentNode.insertBefore(hiddenItem, trailingAnchor);
+          const moreItem = document.getElementById('nav-more');
+          if (moreItem) {
+            moreItem.parentNode.insertBefore(hiddenItem, moreItem);
           }
           checkNavOverflow();
           const order = [...document.querySelector('.nav-top').querySelectorAll('[data-nav-id]')].map(el => el.dataset.navId);
