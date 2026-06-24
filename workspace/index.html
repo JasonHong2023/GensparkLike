@@ -357,6 +357,10 @@
       transition: color 0.15s ease;
     }
     .nav-item:hover { color: var(--text); }
+    .nav-item[draggable="true"] { cursor: grab; }
+    .nav-item[draggable="true"]:active { cursor: grabbing; }
+    .nav-item.drag-over .nav-icon { background: var(--nav-active-bg); }
+    .nav-item.dragging { opacity: 0.4; }
     .nav-icon {
       font-size: 20px;
       display: flex;
@@ -1048,12 +1052,12 @@
       <a href="../" class="nav-item" style="margin-bottom:4px;">
         <span class="nav-icon" style="font-size:18px;">✦</span>
       </a>
-      <div class="nav-item"><span class="nav-icon">➕</span><span class="nav-label">New</span></div>
-      <div class="nav-item active"><span class="nav-icon">🏠</span><span class="nav-label">首頁</span></div>
-      <div class="nav-item"><span class="nav-icon">🧰</span><span class="nav-label">技能</span></div>
-      <div class="nav-item"><span class="nav-icon">🦖</span><span class="nav-label">Claw</span></div>
-      <div class="nav-item"><span class="nav-icon">🔗</span><span class="nav-label">工作流程</span></div>
-      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">雲端硬碟</span></div>
+      <div class="nav-item" draggable="true" data-nav-id="new"><span class="nav-icon">➕</span><span class="nav-label">New</span></div>
+      <div class="nav-item active" draggable="true" data-nav-id="home"><span class="nav-icon">🏠</span><span class="nav-label">首頁</span></div>
+      <div class="nav-item" draggable="true" data-nav-id="skills"><span class="nav-icon">🧰</span><span class="nav-label">技能</span></div>
+      <div class="nav-item" draggable="true" data-nav-id="claw"><span class="nav-icon">🦖</span><span class="nav-label">Claw</span></div>
+      <div class="nav-item" draggable="true" data-nav-id="workflow"><span class="nav-icon">🔗</span><span class="nav-label">工作流程</span></div>
+      <div class="nav-item" draggable="true" data-nav-id="drive"><span class="nav-icon">📁</span><span class="nav-label">雲端硬碟</span></div>
       <div class="nav-item" id="nav-more"><span class="nav-icon">•••</span><span class="nav-label">更多</span></div>
     </div>
     <div class="more-popover hidden" id="more-popover"></div>
@@ -1577,6 +1581,73 @@
       localStorage.setItem('gs-enabled-domains', JSON.stringify(ids));
     }
 
+    const STATIC_NAV_IDS = ['new','home','skills','claw','workflow','drive'];
+
+    function getNavOrder() {
+      try { return JSON.parse(localStorage.getItem('gs-nav-order') || 'null'); } catch { return null; }
+    }
+    function saveNavOrder(order) {
+      localStorage.setItem('gs-nav-order', JSON.stringify(order));
+    }
+
+    function applyNavOrder() {
+      const navTop = document.querySelector('.nav-top');
+      const moreItem = document.getElementById('nav-more');
+      if (!navTop || !moreItem) return;
+      const order = getNavOrder();
+      if (!order) return;
+      const items = [...navTop.querySelectorAll('[data-nav-id]')];
+      items.sort((a, b) => {
+        const ai = order.indexOf(a.dataset.navId);
+        const bi = order.indexOf(b.dataset.navId);
+        if (ai === -1) return 1;
+        if (bi === -1) return -1;
+        return ai - bi;
+      });
+      items.forEach(el => moreItem.parentNode.insertBefore(el, moreItem));
+    }
+
+    function setupNavDrag() {
+      const navTop = document.querySelector('.nav-top');
+      if (!navTop) return;
+      let dragSrc = null;
+      navTop.addEventListener('dragstart', (e) => {
+        const item = e.target.closest('[draggable="true"]');
+        if (!item) return;
+        dragSrc = item;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', item.dataset.navId || '');
+      });
+      navTop.addEventListener('dragend', () => {
+        navTop.querySelectorAll('.dragging, .drag-over').forEach(el => el.classList.remove('dragging', 'drag-over'));
+      });
+      navTop.addEventListener('dragover', (e) => e.preventDefault());
+      navTop.addEventListener('dragenter', (e) => {
+        const item = e.target.closest('[draggable="true"]');
+        if (item && item !== dragSrc) item.classList.add('drag-over');
+      });
+      navTop.addEventListener('dragleave', (e) => {
+        const item = e.target.closest('[draggable="true"]');
+        if (item) item.classList.remove('drag-over');
+      });
+      navTop.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const target = e.target.closest('[draggable="true"]');
+        if (!target || target === dragSrc || !dragSrc) return;
+        target.classList.remove('drag-over');
+        const parent = dragSrc.parentNode;
+        const all = [...parent.querySelectorAll('[data-nav-id]')];
+        if (all.indexOf(dragSrc) < all.indexOf(target)) {
+          parent.insertBefore(dragSrc, target.nextSibling);
+        } else {
+          parent.insertBefore(dragSrc, target);
+        }
+        const order = [...parent.querySelectorAll('[data-nav-id]')].map(el => el.dataset.navId);
+        saveNavOrder(order);
+      });
+    }
+
     function renderDomainNav() {
       const ids = getEnabledDomains();
       document.querySelectorAll('.domain-nav-item').forEach(el => el.remove());
@@ -1587,11 +1658,13 @@
         if (!d) return;
         const el = document.createElement('div');
         el.className = 'nav-item domain-nav-item';
+        el.draggable = true;
+        el.dataset.navId = id;
         el.dataset.domainId = id;
         el.innerHTML = `<span class="nav-icon">${d.icon}</span><span class="nav-label">${d.label}</span>`;
         moreItem.parentNode.insertBefore(el, moreItem);
       });
-      // Check overflow after rendering
+      applyNavOrder();
       requestAnimationFrame(checkNavOverflow);
     }
 
@@ -1662,6 +1735,7 @@
 
     // Init domain nav on page load
     document.addEventListener('DOMContentLoaded', () => {
+      setupNavDrag();
       renderDomainNav();
       window.addEventListener('resize', checkNavOverflow);
     });
