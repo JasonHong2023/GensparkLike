@@ -1520,7 +1520,12 @@
     ];
 
     function getEnabledDomains() {
-      try { return JSON.parse(localStorage.getItem('gs-enabled-domains') || '[]'); } catch { return []; }
+      try {
+        const raw = localStorage.getItem('gs-enabled-domains');
+        if (raw) return JSON.parse(raw);
+        // Default: all domains enabled
+        return DOMAINS.map(d => d.id);
+      } catch { return DOMAINS.map(d => d.id); }
     }
 
     function saveEnabledDomains(ids) {
