@@ -462,6 +462,8 @@
       cursor: pointer;
     }
     .more-popover-item:hover { background: var(--menu-hover); color: var(--text); }
+    .more-popover-item[draggable="true"] { cursor: grab; }
+    .more-popover-item[draggable="true"]:active { cursor: grabbing; }
     .more-popover-item .nav-icon { font-size: 18px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
 
     /* ── Top-right actions ── */
@@ -1653,7 +1655,7 @@
           dragFromPopover = item.dataset.domainId;
           e.dataTransfer.effectAllowed = 'move';
           e.dataTransfer.setData('text/plain', item.dataset.navId || '');
-          morePopover.classList.add('hidden');
+          item.classList.add('dragging');
         });
       }
 
@@ -1661,6 +1663,7 @@
         dragSrc = null;
         dragFromPopover = null;
         document.querySelectorAll('.dragging, .drag-over').forEach(el => el.classList.remove('dragging', 'drag-over'));
+        morePopover.classList.add('hidden');
       });
 
       navTop.addEventListener('dragstart', (e) => {
@@ -1838,7 +1841,18 @@
         if (!item) return;
         const id = item.dataset.domainId;
         if (!id) return;
-        // Navigate or toggle domain (same behavior as clicking the nav item)
+        // Click popover item → unhide and insert before trailing anchor
+        const hiddenItem = document.querySelector(`.domain-nav-item[data-domain-id="${id}"]`);
+        if (hiddenItem) {
+          hiddenItem.style.removeProperty('display');
+          const trailingAnchor = document.querySelector('[data-nav-id="mailbox"]') || document.getElementById('nav-more');
+          if (trailingAnchor) {
+            trailingAnchor.parentNode.insertBefore(hiddenItem, trailingAnchor);
+          }
+          checkNavOverflow();
+          const order = [...document.querySelector('.nav-top').querySelectorAll('[data-nav-id]')].map(el => el.dataset.navId);
+          saveNavOrder(order);
+        }
         morePopover.classList.add('hidden');
       });
     }
