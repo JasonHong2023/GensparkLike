@@ -1052,8 +1052,8 @@
       <a href="../" class="nav-item" style="margin-bottom:4px;">
         <span class="nav-icon" style="font-size:18px;">✦</span>
       </a>
-      <div class="nav-item" draggable="true" data-nav-id="new"><span class="nav-icon">➕</span><span class="nav-label">New</span></div>
-      <div class="nav-item active" draggable="true" data-nav-id="home"><span class="nav-icon">🏠</span><span class="nav-label">首頁</span></div>
+      <div class="nav-item" data-nav-id="new"><span class="nav-icon">➕</span><span class="nav-label">New</span></div>
+      <div class="nav-item active" data-nav-id="home"><span class="nav-icon">🏠</span><span class="nav-label">首頁</span></div>
       <div class="nav-item" draggable="true" data-nav-id="skills"><span class="nav-icon">🧰</span><span class="nav-label">技能</span></div>
       <div class="nav-item" draggable="true" data-nav-id="claw"><span class="nav-icon">🦖</span><span class="nav-label">Claw</span></div>
       <div class="nav-item" draggable="true" data-nav-id="workflow"><span class="nav-icon">🔗</span><span class="nav-label">工作流程</span></div>
@@ -1581,8 +1581,6 @@
       localStorage.setItem('gs-enabled-domains', JSON.stringify(ids));
     }
 
-    const STATIC_NAV_IDS = ['new','home','skills','claw','workflow','drive'];
-
     function getNavOrder() {
       try { return JSON.parse(localStorage.getItem('gs-nav-order') || 'null'); } catch { return null; }
     }
@@ -1592,11 +1590,14 @@
 
     function applyNavOrder() {
       const navTop = document.querySelector('.nav-top');
-      const moreItem = document.getElementById('nav-more');
-      if (!navTop || !moreItem) return;
+      if (!navTop) return;
       const order = getNavOrder();
       if (!order) return;
-      const items = [...navTop.querySelectorAll('[data-nav-id]')];
+      const anchor = document.querySelector('[data-nav-id="home"]');
+      if (!anchor) return;
+      const items = [...navTop.querySelectorAll('[data-nav-id]')].filter(el =>
+        el.dataset.navId !== 'new' && el.dataset.navId !== 'home'
+      );
       items.sort((a, b) => {
         const ai = order.indexOf(a.dataset.navId);
         const bi = order.indexOf(b.dataset.navId);
@@ -1604,7 +1605,7 @@
         if (bi === -1) return -1;
         return ai - bi;
       });
-      items.forEach(el => moreItem.parentNode.insertBefore(el, moreItem));
+      items.forEach(el => anchor.parentNode.insertBefore(el, anchor.nextSibling));
     }
 
     function setupNavDrag() {
@@ -1636,6 +1637,8 @@
         const target = e.target.closest('[draggable="true"]');
         if (!target || target === dragSrc || !dragSrc) return;
         target.classList.remove('drag-over');
+        // new/home are anchors — never drop above them
+        if (target.dataset.navId === 'new' || target.dataset.navId === 'home') return;
         const parent = dragSrc.parentNode;
         const all = [...parent.querySelectorAll('[data-nav-id]')];
         if (all.indexOf(dragSrc) < all.indexOf(target)) {
