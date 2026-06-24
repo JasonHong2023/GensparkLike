@@ -313,6 +313,7 @@
 
     /* ── Left Sidebar ── */
     .sidebar {
+      position: relative;
       width: 72px;
       background: var(--sidebar-bg);
       border-right: 1px solid var(--sidebar-border);
@@ -325,7 +326,20 @@
       z-index: 10;
       transition: background 0.25s ease, border-color 0.25s ease;
     }
-    .nav-top, .nav-bottom {
+    .nav-top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+    }
+    .nav-top::-webkit-scrollbar { width: 3px; }
+    .nav-top::-webkit-scrollbar-track { background: transparent; }
+    .nav-top::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; }
+    .nav-top:hover::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); }
+    .nav-bottom {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -390,6 +404,34 @@
     .menu-icon { font-size: 16px; color: var(--text-muted); }
     .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
     .menu-arrow { color: var(--text-muted); font-size: 16px; }
+
+    /* ── More nav popover ── */
+    .more-popover {
+      position: absolute;
+      bottom: 80px;
+      left: 16px;
+      background: var(--menu-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 160px;
+      padding: 8px 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+    .more-popover.hidden { display: none; }
+    .more-popover-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .more-popover-item:hover { background: var(--menu-hover); color: var(--text); }
+    .more-popover-item .nav-icon { font-size: 18px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
 
     /* ── Top-right actions ── */
     .top-right-actions {
@@ -1012,8 +1054,9 @@
       <div class="nav-item"><span class="nav-icon">🦖</span><span class="nav-label">Claw</span></div>
       <div class="nav-item"><span class="nav-icon">🔗</span><span class="nav-label">工作流程</span></div>
       <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">雲端硬碟</span></div>
-      <div class="nav-item"><span class="nav-icon">•••</span><span class="nav-label">更多</span></div>
+      <div class="nav-item" id="nav-more"><span class="nav-icon">•••</span><span class="nav-label">更多</span></div>
     </div>
+    <div class="more-popover hidden" id="more-popover"></div>
     <div class="nav-bottom">
       <div class="nav-item" id="user-avatar"><span class="nav-icon">👤</span></div>
     </div>
@@ -1536,19 +1579,50 @@
 
     function renderDomainNav() {
       const ids = getEnabledDomains();
-      // Remove existing domain nav items
       document.querySelectorAll('.domain-nav-item').forEach(el => el.remove());
-      // Find the "more" item anchor
-      const moreItem = document.querySelector('.nav-item:last-child');
+      const moreItem = document.getElementById('nav-more');
       if (!moreItem) return;
       ids.forEach(id => {
         const d = DOMAINS.find(x => x.id === id);
         if (!d) return;
         const el = document.createElement('div');
         el.className = 'nav-item domain-nav-item';
+        el.dataset.domainId = id;
         el.innerHTML = `<span class="nav-icon">${d.icon}</span><span class="nav-label">${d.label}</span>`;
         moreItem.parentNode.insertBefore(el, moreItem);
       });
+      // Check overflow after rendering
+      requestAnimationFrame(checkNavOverflow);
+    }
+
+    let hiddenDomainItems = [];
+
+    function checkNavOverflow() {
+      const navTop = document.querySelector('.nav-top');
+      const moreItem = document.getElementById('nav-more');
+      const popover = document.getElementById('more-popover');
+      if (!navTop || !moreItem || !popover) return;
+
+      // Unhide all domain items first
+      document.querySelectorAll('.domain-nav-item').forEach(el => el.style.removeProperty('display'));
+      hiddenDomainItems = [];
+
+      if (navTop.scrollHeight > navTop.clientHeight) {
+        const items = [...navTop.querySelectorAll('.domain-nav-item')].reverse();
+        for (const el of items) {
+          if (navTop.scrollHeight <= navTop.clientHeight) break;
+          const id = el.dataset.domainId;
+          if (id) hiddenDomainItems.push(id);
+          el.style.display = 'none';
+        }
+        hiddenDomainItems.reverse();
+      }
+
+      popover.innerHTML = hiddenDomainItems.map(id => {
+        const d = DOMAINS.find(x => x.id === id);
+        if (!d) return '';
+        return `<div class="more-popover-item" data-domain-id="${d.id}"><span class="nav-icon">${d.icon}</span>${d.label}</div>`;
+      }).join('');
     }
 
     function initDomains() {
@@ -1587,7 +1661,10 @@
     }
 
     // Init domain nav on page load
-    document.addEventListener('DOMContentLoaded', renderDomainNav);
+    document.addEventListener('DOMContentLoaded', () => {
+      renderDomainNav();
+      window.addEventListener('resize', checkNavOverflow);
+    });
 
     menuSettings.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1599,6 +1676,31 @@
     settingsOverlay.addEventListener('click', (e) => {
       if (e.target === settingsOverlay) closeSettings();
     });
+
+    // ── More nav popover ──
+    const navMore = document.getElementById('nav-more');
+    const morePopover = document.getElementById('more-popover');
+    if (navMore && morePopover) {
+      navMore.addEventListener('click', (e) => {
+        e.stopPropagation();
+        morePopover.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!morePopover.classList.contains('hidden') &&
+            !morePopover.contains(e.target) && e.target !== navMore &&
+            !navMore.contains(e.target)) {
+          morePopover.classList.add('hidden');
+        }
+      });
+      morePopover.addEventListener('click', (e) => {
+        const item = e.target.closest('.more-popover-item');
+        if (!item) return;
+        const id = item.dataset.domainId;
+        if (!id) return;
+        // Navigate or toggle domain (same behavior as clicking the nav item)
+        morePopover.classList.add('hidden');
+      });
+    }
 
     // ── Assistant mode ──
     const assistantFloat = document.getElementById('assistant-float');
