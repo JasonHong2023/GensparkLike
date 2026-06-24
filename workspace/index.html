@@ -358,55 +358,6 @@
       color: var(--text);
     }
 
-    /* ── Theme flyout (third level) ── */
-    .menu-item.has-submenu {
-      position: static;
-    }
-    .theme-flyout {
-      position: absolute;
-      left: 100%;
-      top: 0;
-      bottom: 0;
-      background: var(--menu-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      min-width: 200px;
-      overflow-y: auto;
-      padding: 6px 0;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      z-index: 110;
-      display: none;
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-    .menu-item.has-submenu:hover .theme-flyout,
-    .menu-item.has-submenu .theme-flyout:hover {
-      display: block;
-      opacity: 1;
-    }
-    .theme-flyout .theme-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 16px;
-      color: var(--text-secondary);
-      font-size: 13px;
-      cursor: pointer;
-      transition: background 0.1s ease;
-    }
-    .theme-flyout .theme-item:hover { background: var(--menu-hover); color: var(--text); }
-    .theme-swatch {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .theme-flyout .theme-item.active-theme { color: var(--text); }
-    .theme-flyout .theme-item.active-theme .theme-swatch {
-      box-shadow: 0 0 0 2px var(--accent);
-    }
-
     /* ── User Menu Dropdown ── */
     .user-menu {
       position: absolute;
@@ -640,43 +591,136 @@
     ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
 
     /* ── Responsive ── */
-    /* ── Assistant flyout ── */
-    .menu-item.has-submenu-assistant {
-      position: static;
-    }
-    .assistant-flyout {
-      position: absolute;
-      left: 100%;
-      top: 0;
-      bottom: 0;
-      background: var(--menu-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      min-width: 120px;
-      padding: 6px 0;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      z-index: 110;
+
+    /* ── Settings Modal ── */
+    .settings-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.5);
       display: none;
-      opacity: 0;
-      transition: opacity 0.15s ease;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
     }
-    .menu-item.has-submenu-assistant:hover .assistant-flyout,
-    .menu-item.has-submenu-assistant .assistant-flyout:hover {
-      display: block;
-      opacity: 1;
+    .settings-overlay.open { display: flex; }
+    .settings-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 480px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+      padding: 28px 32px;
     }
-    .assistant-flyout .assistant-item {
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 16px;
-      color: var(--text-secondary);
-      font-size: 13px;
-      cursor: pointer;
-      transition: background 0.1s ease;
     }
-    .assistant-flyout .assistant-item:hover { background: var(--menu-hover); color: var(--text); }
-    .assistant-flyout .assistant-item.active-assistant { color: var(--text); }
+    .settings-close {
+      background: none; border: none;
+      color: var(--text-muted); cursor: pointer;
+      font-size: 20px; padding: 4px;
+      transition: color 0.15s ease;
+    }
+    .settings-close:hover { color: var(--text); }
+    .settings-section {
+      margin-bottom: 28px;
+    }
+    .settings-section:last-child { margin-bottom: 0; }
+    .settings-section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .settings-theme-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .settings-theme-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: var(--surface);
+    }
+    .settings-theme-item:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+    }
+    .settings-theme-item.active-theme {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.04);
+    }
+    .settings-theme-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    .settings-theme-name {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.2;
+    }
+    .settings-theme-item.active-theme .settings-theme-name {
+      color: var(--text);
+    }
+    .settings-assistant-options {
+      display: flex;
+      gap: 10px;
+    }
+    .settings-assistant-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: var(--surface);
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .settings-assistant-item:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+    }
+    .settings-assistant-item.active {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+    .settings-assistant-icon {
+      font-size: 32px;
+    }
 
     /* ── Floating assistant icon ── */
     .assistant-float {
@@ -850,58 +894,12 @@
     <div class="menu-item">
       <div class="menu-item-left"><span class="menu-icon">📥</span> 下載</div>
     </div>
-    <div class="menu-item">
+    <div class="menu-item" id="menu-settings">
       <div class="menu-item-left"><span class="menu-icon">⚙️</span> 設置</div>
-    </div>
-    <div class="menu-item has-submenu">
-      <div class="menu-item-left"><span class="menu-icon">🎨</span> 主題</div>
-      <span class="menu-arrow">›</span>
-      <div class="theme-flyout">
-        <div class="theme-item active-theme" data-theme="default"><span class="theme-swatch" style="background:#3b82f6;"></span> Default</div>
-        <div class="theme-item" data-theme="slate"><span class="theme-swatch" style="background:#a1a1aa;"></span> Slate</div>
-        <div class="theme-item" data-theme="carbon"><span class="theme-swatch" style="background:#fafafa;"></span> Carbon</div>
-        <div class="theme-item" data-theme="forest"><span class="theme-swatch" style="background:#4ade80;"></span> Forest</div>
-        <div class="theme-item" data-theme="ocean"><span class="theme-swatch" style="background:#38bdf8;"></span> Ocean</div>
-        <div class="theme-item" data-theme="pine"><span class="theme-swatch" style="background:#d97706;"></span> Pine</div>
-        <div class="theme-item" data-theme="moss"><span class="theme-swatch" style="background:#84cc16;"></span> Moss</div>
-        <div class="theme-item" data-theme="sunset"><span class="theme-swatch" style="background:#ff7b4a;"></span> Sunset</div>
-        <div class="theme-item" data-theme="ember"><span class="theme-swatch" style="background:#ef4444;"></span> Ember</div>
-        <div class="theme-item" data-theme="amber"><span class="theme-swatch" style="background:#f59e0b;"></span> Amber</div>
-        <div class="theme-item" data-theme="rose"><span class="theme-swatch" style="background:#f472b6;"></span> Rose</div>
-        <div class="theme-item" data-theme="violet"><span class="theme-swatch" style="background:#a78bfa;"></span> Violet</div>
-        <div class="theme-item" data-theme="sapphire"><span class="theme-swatch" style="background:#60a5fa;"></span> Sapphire</div>
-        <div class="theme-item" data-theme="teal"><span class="theme-swatch" style="background:#2dd4bf;"></span> Teal</div>
-        <div class="theme-item" data-theme="frost"><span class="theme-swatch" style="background:#7dd3fc;"></span> Frost</div>
-        <div class="theme-item" data-theme="midnight"><span class="theme-swatch" style="background:#c084fc;"></span> Midnight</div>
-        <div class="theme-item" data-theme="cinnamor"><span class="theme-swatch" style="background:#fb923c;"></span> Cinnamor</div>
-        <div class="theme-item" data-theme="abyss"><span class="theme-swatch" style="background:#22c55e;"></span> Abyss</div>
-        <div class="theme-item" data-theme="royal"><span class="theme-swatch" style="background:#fbbf24;"></span> Royal</div>
-        <div class="theme-item" data-theme="blood"><span class="theme-swatch" style="background:#dc2626;"></span> Blood</div>
-      <div class="theme-item" data-theme="steel"><span class="theme-swatch" style="background:#64748b;"></span> Steel</div>
-      <div class="theme-item" data-theme="cherry"><span class="theme-swatch" style="background:#fb7185;"></span> Cherry</div>
-      <div class="theme-item" data-theme="ink"><span class="theme-swatch" style="background:#f5d742;"></span> Ink</div>
-      <div class="theme-item" data-theme="shadow"><span class="theme-swatch" style="background:#cbd5e1;"></span> Shadow</div>
-      <div class="theme-item" data-theme="lavender"><span class="theme-swatch" style="background:#c4b5fd;"></span> Lavender</div>
-      <div class="theme-item" data-theme="cedar"><span class="theme-swatch" style="background:#b8860b;"></span> Cedar</div>
-      <div class="theme-item" data-theme="storm"><span class="theme-swatch" style="background:#facc15;"></span> Storm</div>
-      <div class="theme-item" data-theme="copper"><span class="theme-swatch" style="background:#c2410c;"></span> Copper</div>
-      <div class="theme-item" data-theme="neon"><span class="theme-swatch" style="background:#22d3ee;"></span> Neon</div>
-      <div class="theme-item" data-theme="dusk"><span class="theme-swatch" style="background:#818cf8;"></span> Dusk</div>
-      </div>
     </div>
     <div class="menu-item">
       <div class="menu-item-left"><span class="menu-icon">🛟</span> 幫助</div>
       <span class="menu-arrow">›</span>
-    </div>
-    <div class="menu-item has-submenu-assistant">
-      <div class="menu-item-left"><span class="menu-icon">🤖</span> 小助教設定</div>
-      <span class="menu-arrow">›</span>
-      <div class="assistant-flyout">
-        <div class="assistant-item" data-mode="off">關閉</div>
-        <div class="assistant-item" data-mode="robot">機器人</div>
-        <div class="assistant-item active-assistant" data-mode="cat">貓派</div>
-        <div class="assistant-item" data-mode="dog">狗派</div>
-      </div>
     </div>
     <div class="menu-divider"></div>
     <div class="menu-item" style="color:var(--text);">
@@ -1018,6 +1016,24 @@
     </div>
   </main>
 
+  <!-- Settings Modal -->
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2>⚙️ 設置 / Settings</h2>
+        <button class="settings-close" id="settings-close">✕</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">🎨 主題 / Theme</div>
+        <div class="settings-theme-grid" id="settings-theme-grid"></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">🤖 小助教設定 / Assistant</div>
+        <div class="settings-assistant-options" id="settings-assistant-options"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating assistant icon -->
   <div class="assistant-float" id="assistant-float"><img src="images/cat.jpg" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" /></div>
 
@@ -1048,21 +1064,110 @@
       menu.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // ── Theme switching ──
-    const themeItems = document.querySelectorAll('.theme-flyout .theme-item');
-    themeItems.forEach(item => {
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const theme = item.dataset.theme;
-        if (!theme) return;
-        document.documentElement.setAttribute('data-theme', theme);
-        themeItems.forEach(t => t.classList.remove('active-theme'));
-        item.classList.add('active-theme');
+    // ── Settings modal ──
+    const settingsOverlay = document.getElementById('settings-overlay');
+    const settingsClose = document.getElementById('settings-close');
+    const menuSettings = document.getElementById('menu-settings');
+    const settingsThemeGrid = document.getElementById('settings-theme-grid');
+    const settingsAssistantOptions = document.getElementById('settings-assistant-options');
+
+    const ALL_THEMES = [
+      { id:'default', name:'Default', swatch:'#3b82f6' },
+      { id:'slate', name:'Slate', swatch:'#a1a1aa' },
+      { id:'carbon', name:'Carbon', swatch:'#fafafa' },
+      { id:'forest', name:'Forest', swatch:'#4ade80' },
+      { id:'ocean', name:'Ocean', swatch:'#38bdf8' },
+      { id:'pine', name:'Pine', swatch:'#d97706' },
+      { id:'moss', name:'Moss', swatch:'#84cc16' },
+      { id:'sunset', name:'Sunset', swatch:'#ff7b4a' },
+      { id:'ember', name:'Ember', swatch:'#ef4444' },
+      { id:'amber', name:'Amber', swatch:'#f59e0b' },
+      { id:'rose', name:'Rose', swatch:'#f472b6' },
+      { id:'violet', name:'Violet', swatch:'#a78bfa' },
+      { id:'sapphire', name:'Sapphire', swatch:'#60a5fa' },
+      { id:'teal', name:'Teal', swatch:'#2dd4bf' },
+      { id:'frost', name:'Frost', swatch:'#7dd3fc' },
+      { id:'midnight', name:'Midnight', swatch:'#c084fc' },
+      { id:'cinnamor', name:'Cinnamor', swatch:'#fb923c' },
+      { id:'abyss', name:'Abyss', swatch:'#22c55e' },
+      { id:'royal', name:'Royal', swatch:'#fbbf24' },
+      { id:'blood', name:'Blood', swatch:'#dc2626' },
+      { id:'steel', name:'Steel', swatch:'#64748b' },
+      { id:'cherry', name:'Cherry', swatch:'#fb7185' },
+      { id:'ink', name:'Ink', swatch:'#f5d742' },
+      { id:'shadow', name:'Shadow', swatch:'#cbd5e1' },
+      { id:'lavender', name:'Lavender', swatch:'#c4b5fd' },
+      { id:'cedar', name:'Cedar', swatch:'#b8860b' },
+      { id:'storm', name:'Storm', swatch:'#facc15' },
+      { id:'copper', name:'Copper', swatch:'#c2410c' },
+      { id:'neon', name:'Neon', swatch:'#22d3ee' },
+      { id:'dusk', name:'Dusk', swatch:'#818cf8' },
+    ];
+
+    function openSettings() {
+      renderSettingsThemes();
+      renderSettingsAssistant();
+      settingsOverlay.classList.add('open');
+    }
+
+    function closeSettings() {
+      settingsOverlay.classList.remove('open');
+    }
+
+    function renderSettingsThemes() {
+      const current = document.documentElement.getAttribute('data-theme') || 'default';
+      settingsThemeGrid.innerHTML = ALL_THEMES.map(t =>
+        `<div class="settings-theme-item${t.id === current ? ' active-theme' : ''}" data-theme="${t.id}">
+          <div class="settings-theme-swatch" style="background:${t.swatch}"></div>
+          <div class="settings-theme-name">${t.name}</div>
+        </div>`
+      ).join('');
+      settingsThemeGrid.querySelectorAll('.settings-theme-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const theme = el.dataset.theme;
+          document.documentElement.setAttribute('data-theme', theme);
+          settingsThemeGrid.querySelectorAll('.settings-theme-item').forEach(t => t.classList.remove('active-theme'));
+          el.classList.add('active-theme');
+        });
       });
+    }
+
+    function renderSettingsAssistant() {
+      const modes = [
+        { mode:'off', icon:'💤', label:'關閉' },
+        { mode:'robot', icon:'🤖', label:'機器人' },
+        { mode:'cat', icon:'😺', label:'貓派' },
+        { mode:'dog', icon:'🐶', label:'狗派' },
+      ];
+      settingsAssistantOptions.innerHTML = modes.map(m =>
+        `<div class="settings-assistant-item${m.mode === currentMode ? ' active' : ''}" data-mode="${m.mode}">
+          <div class="settings-assistant-icon">${m.icon}</div>
+          <div>${m.label}</div>
+        </div>`
+      ).join('');
+      settingsAssistantOptions.querySelectorAll('.settings-assistant-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setAssistantMode(el.dataset.mode);
+          settingsAssistantOptions.querySelectorAll('.settings-assistant-item').forEach(i => i.classList.remove('active'));
+          el.classList.add('active');
+        });
+      });
+    }
+
+    menuSettings.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.classList.add('hidden');
+      openSettings();
+    });
+
+    settingsClose.addEventListener('click', closeSettings);
+    settingsOverlay.addEventListener('click', (e) => {
+      if (e.target === settingsOverlay) closeSettings();
     });
 
     // ── Assistant mode ──
-    const assistantItems = document.querySelectorAll('.assistant-flyout .assistant-item');
     const assistantFloat = document.getElementById('assistant-float');
     const assistantChat = document.getElementById('assistant-chat');
     const chatClose = document.getElementById('chat-close');
@@ -1076,9 +1181,6 @@
 
     function setAssistantMode(mode) {
       currentMode = mode;
-      assistantItems.forEach(item => item.classList.remove('active-assistant'));
-      const active = document.querySelector(`.assistant-item[data-mode="${mode}"]`);
-      if (active) active.classList.add('active-assistant');
       if (mode === 'off') {
         assistantFloat.classList.add('hidden');
         assistantChat.classList.remove('open');
@@ -1089,13 +1191,6 @@
     }
 
     setAssistantMode('cat');
-
-    assistantItems.forEach(item => {
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setAssistantMode(item.dataset.mode);
-      });
-    });
 
     assistantFloat.addEventListener('click', (e) => {
       e.stopPropagation();
