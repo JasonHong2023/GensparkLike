@@ -326,6 +326,16 @@
       z-index: 10;
       transition: background 0.25s ease, border-color 0.25s ease;
     }
+    .sidebar.collapsed {
+      width: 56px;
+      transition: width 0.2s ease;
+    }
+    .sidebar.collapsed .nav-item { font-size: 0; }
+    .sidebar.collapsed .nav-item .nav-label { display: none; }
+    .sidebar.collapsed .sidebar-toggle .nav-icon { transform: rotate(180deg); }
+    .sidebar-toggle { opacity: 0.45; transition: opacity 0.15s ease; }
+    .sidebar-toggle:hover { opacity: 1; }
+    .sidebar-toggle .nav-icon { transition: transform 0.2s ease; }
     .nav-top {
       display: flex;
       flex-direction: column;
@@ -1063,6 +1073,7 @@
     <div class="more-popover hidden" id="more-popover"></div>
     <div class="nav-bottom">
       <div class="nav-item" id="user-avatar"><span class="nav-icon">👤</span></div>
+      <div class="nav-item sidebar-toggle" id="sidebar-toggle"><span class="nav-icon">◀</span><span class="nav-label">收合</span></div>
     </div>
   </aside>
 
@@ -1776,6 +1787,32 @@
         if (!id) return;
         // Navigate or toggle domain (same behavior as clicking the nav item)
         morePopover.classList.add('hidden');
+      });
+    }
+
+    // ── Sidebar collapse toggle ──
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    if (toggleBtn && sidebar) {
+      if (localStorage.getItem('gs-sidebar-collapsed') === 'true') {
+        sidebar.classList.add('collapsed');
+        toggleBtn.querySelector('.nav-label').textContent = '展開';
+        toggleBtn.querySelector('.nav-icon').textContent = '▶';
+      }
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wasCollapsed = sidebar.classList.toggle('collapsed');
+        localStorage.setItem('gs-sidebar-collapsed', wasCollapsed);
+        const label = toggleBtn.querySelector('.nav-label');
+        const icon = toggleBtn.querySelector('.nav-icon');
+        if (wasCollapsed) {
+          label.textContent = '展開';
+          icon.textContent = '▶';
+        } else {
+          label.textContent = '收合';
+          icon.textContent = '◀';
+        }
+        setTimeout(checkNavOverflow, 250);
       });
     }
 
