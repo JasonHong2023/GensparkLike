@@ -1085,8 +1085,8 @@
       <div class="nav-item" draggable="true" data-nav-id="claw"><span class="nav-icon">🦖</span><span class="nav-label">Claw</span></div>
       <div class="nav-item" draggable="true" data-nav-id="workflow"><span class="nav-icon">🔗</span><span class="nav-label">工作流程</span></div>
       <div class="nav-item" draggable="true" data-nav-id="drive"><span class="nav-icon">📁</span><span class="nav-label">雲端硬碟</span></div>
-      <div class="nav-item" draggable="true" data-nav-id="mailbox"><span class="nav-icon">✉️</span><span class="nav-label">郵箱</span></div>
-      <div class="nav-item" draggable="true" data-nav-id="workbench"><span class="nav-icon">🛠️</span><span class="nav-label">工作臺</span></div>
+      <div class="nav-item" data-nav-id="mailbox"><span class="nav-icon">✉️</span><span class="nav-label">郵箱</span></div>
+      <div class="nav-item" data-nav-id="workbench"><span class="nav-icon">🛠️</span><span class="nav-label">工作臺</span></div>
       <div class="nav-item" id="nav-more"><span class="nav-icon">•••</span><span class="nav-label">更多</span></div>
     </div>
     <div class="more-popover hidden" id="more-popover"></div>
@@ -1620,12 +1620,13 @@
 
     function applyNavOrder() {
       const navTop = document.querySelector('.nav-top');
-      const moreItem = document.getElementById('nav-more');
-      if (!navTop || !moreItem) return;
+      const trailingAnchor = document.querySelector('[data-nav-id="mailbox"]') || document.getElementById('nav-more');
+      if (!navTop || !trailingAnchor) return;
       const order = getNavOrder();
       if (!order) return;
       const items = [...navTop.querySelectorAll('[data-nav-id]')].filter(el =>
-        el.dataset.navId !== 'new' && el.dataset.navId !== 'home'
+        el.dataset.navId !== 'new' && el.dataset.navId !== 'home' &&
+        el.dataset.navId !== 'mailbox' && el.dataset.navId !== 'workbench'
       );
       items.sort((a, b) => {
         const ai = order.indexOf(a.dataset.navId);
@@ -1635,7 +1636,7 @@
         if (bi === -1) return -1;
         return ai - bi;
       });
-      items.forEach(el => moreItem.parentNode.insertBefore(el, moreItem));
+      items.forEach(el => trailingAnchor.parentNode.insertBefore(el, trailingAnchor));
     }
 
     function setupNavDrag() {
@@ -1685,6 +1686,7 @@
       const ids = getEnabledDomains();
       document.querySelectorAll('.domain-nav-item').forEach(el => el.remove());
       const moreItem = document.getElementById('nav-more');
+      const trailingAnchor = document.querySelector('[data-nav-id="mailbox"]') || moreItem;
       if (!moreItem) return;
       ids.forEach(id => {
         const d = DOMAINS.find(x => x.id === id);
@@ -1695,7 +1697,7 @@
         el.dataset.navId = id;
         el.dataset.domainId = id;
         el.innerHTML = `<span class="nav-icon">${d.icon}</span><span class="nav-label">${d.label}</span>`;
-        moreItem.parentNode.insertBefore(el, moreItem);
+        trailingAnchor.parentNode.insertBefore(el, trailingAnchor);
       });
       applyNavOrder();
       requestAnimationFrame(checkNavOverflow);
