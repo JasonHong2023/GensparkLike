@@ -802,6 +802,58 @@
     .settings-assistant-icon {
       font-size: 28px;
     }
+    .settings-domain-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .settings-domain-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: var(--surface);
+      user-select: none;
+    }
+    .settings-domain-item:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+    }
+    .settings-domain-item.active {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.04);
+    }
+    .settings-domain-checkbox {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+      font-size: 12px;
+      color: transparent;
+    }
+    .settings-domain-item.active .settings-domain-checkbox {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .settings-domain-icon { font-size: 22px; }
+    .settings-domain-name {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .settings-domain-item.active .settings-domain-name {
+      color: var(--text);
+    }
 
     /* ── Floating assistant icon ── */
     .assistant-float {
@@ -1201,7 +1253,7 @@
           { id: 'theme', icon: '🎨', label: '主題' },
         ]
       },
-      connectors: { icon: '🔌', label: '連接器' },
+      domains: { icon: '📌', label: '應用領域設定' },
       data: { icon: '📊', label: '資料控制' },
       meeting: { icon: '🎙️', label: 'AI 會議記錄' },
       apikeys: { icon: '🔑', label: 'API 金鑰' },
@@ -1311,6 +1363,15 @@
         <div class="settings-theme-grid" id="settings-theme-grid-sub"></div>
       </div>`;
 
+      // — Application Domains / 應用領域設定 —
+      contentHtml += `<div class="settings-content-section" data-section="domains">
+        <div class="settings-content-title">📌 應用領域設定 / Application Domains</div>
+        <div class="settings-field">
+          <div class="settings-field-label">勾選啟用的領域，ICON 會顯示在主導覽列 / Enable domains to show in sidebar</div>
+          <div class="settings-domain-grid" id="settings-domain-grid"></div>
+        </div>
+      </div>`;
+
       // — Connectors —
       contentHtml += `<div class="settings-content-section" data-section="connectors">
         <div class="settings-content-title">🔌 連接器 / Connectors</div>
@@ -1376,6 +1437,7 @@
       initThemeGrid(document.getElementById('settings-theme-grid-sub'));
       initAssistantOptions(document.getElementById('settings-assistant-options'));
       initAssistantOptions(document.getElementById('settings-assistant-options-sub'));
+      initDomains();
     }
 
     function navToSettings(section, sub) {
@@ -1448,6 +1510,77 @@
         });
       });
     }
+
+    // ── Application Domains ──
+    const DOMAINS = [
+      { id: 'pm',     icon: '📋', label: 'PM 領域' },
+      { id: 'manufacturing', icon: '🏭', label: '製造業' },
+      { id: 'smart-mfg',    icon: '⚙️',  label: '智慧製造' },
+      { id: 'education',    icon: '📚', label: '教育領域' },
+    ];
+
+    function getEnabledDomains() {
+      try { return JSON.parse(localStorage.getItem('gs-enabled-domains') || '[]'); } catch { return []; }
+    }
+
+    function saveEnabledDomains(ids) {
+      localStorage.setItem('gs-enabled-domains', JSON.stringify(ids));
+    }
+
+    function renderDomainNav() {
+      const ids = getEnabledDomains();
+      // Remove existing domain nav items
+      document.querySelectorAll('.domain-nav-item').forEach(el => el.remove());
+      // Find the "more" item anchor
+      const moreItem = document.querySelector('.nav-item:last-child');
+      if (!moreItem) return;
+      ids.forEach(id => {
+        const d = DOMAINS.find(x => x.id === id);
+        if (!d) return;
+        const el = document.createElement('div');
+        el.className = 'nav-item domain-nav-item';
+        el.innerHTML = `<span class="nav-icon">${d.icon}</span><span class="nav-label">${d.label}</span>`;
+        moreItem.parentNode.insertBefore(el, moreItem);
+      });
+    }
+
+    function initDomains() {
+      const container = document.getElementById('settings-domain-grid');
+      if (!container) return;
+      const enabled = getEnabledDomains();
+      container.innerHTML = DOMAINS.map(d => {
+        const active = enabled.includes(d.id);
+        return `<div class="settings-domain-item${active ? ' active' : ''}" data-domain="${d.id}">
+          <div class="settings-domain-checkbox">${active ? '✓' : ''}</div>
+          <span class="settings-domain-icon">${d.icon}</span>
+          <span class="settings-domain-name">${d.label}</span>
+        </div>`;
+      }).join('');
+      container.querySelectorAll('.settings-domain-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = el.dataset.domain;
+          const enabled = getEnabledDomains();
+          const idx = enabled.indexOf(id);
+          if (idx > -1) {
+            enabled.splice(idx, 1);
+          } else {
+            enabled.push(id);
+          }
+          saveEnabledDomains(enabled);
+          // Refresh domain items UI
+          container.querySelectorAll('.settings-domain-item').forEach(item => {
+            const isOn = enabled.includes(item.dataset.domain);
+            item.classList.toggle('active', isOn);
+            item.querySelector('.settings-domain-checkbox').textContent = isOn ? '✓' : '';
+          });
+          renderDomainNav();
+        });
+      });
+    }
+
+    // Init domain nav on page load
+    document.addEventListener('DOMContentLoaded', renderDomainNav);
 
     menuSettings.addEventListener('click', (e) => {
       e.stopPropagation();
