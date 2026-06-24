@@ -1643,6 +1643,26 @@
       const navTop = document.querySelector('.nav-top');
       if (!navTop) return;
       let dragSrc = null;
+      let dragFromPopover = null;
+      const morePopover = document.getElementById('more-popover');
+
+      if (morePopover) {
+        morePopover.addEventListener('dragstart', (e) => {
+          const item = e.target.closest('.more-popover-item');
+          if (!item) return;
+          dragFromPopover = item.dataset.domainId;
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', item.dataset.navId || '');
+          morePopover.classList.add('hidden');
+        });
+      }
+
+      document.addEventListener('dragend', () => {
+        dragSrc = null;
+        dragFromPopover = null;
+        document.querySelectorAll('.dragging, .drag-over').forEach(el => el.classList.remove('dragging', 'drag-over'));
+      });
+
       navTop.addEventListener('dragstart', (e) => {
         const item = e.target.closest('[draggable="true"]');
         if (!item) return;
@@ -1650,9 +1670,6 @@
         item.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', item.dataset.navId || '');
-      });
-      navTop.addEventListener('dragend', () => {
-        navTop.querySelectorAll('.dragging, .drag-over').forEach(el => el.classList.remove('dragging', 'drag-over'));
       });
       navTop.addEventListener('dragover', (e) => e.preventDefault());
       navTop.addEventListener('dragenter', (e) => {
@@ -1666,10 +1683,25 @@
       navTop.addEventListener('drop', (e) => {
         e.preventDefault();
         const target = e.target.closest('[draggable="true"]');
-        if (!target || target === dragSrc || !dragSrc) return;
+        if (!target) return;
         target.classList.remove('drag-over');
-        // new/home are anchors — never drop above them
         if (target.dataset.navId === 'new' || target.dataset.navId === 'home') return;
+
+        // Dragging from popover → unhide domain item and insert at drop position
+        if (dragFromPopover) {
+          const hiddenItem = document.querySelector(`.domain-nav-item[data-domain-id="${dragFromPopover}"]`);
+          if (hiddenItem) {
+            hiddenItem.style.removeProperty('display');
+            target.parentNode.insertBefore(hiddenItem, target);
+            checkNavOverflow();
+            const order = [...target.parentNode.querySelectorAll('[data-nav-id]')].map(el => el.dataset.navId);
+            saveNavOrder(order);
+          }
+          dragFromPopover = null;
+          return;
+        }
+
+        if (!dragSrc || target === dragSrc) return;
         const parent = dragSrc.parentNode;
         const all = [...parent.querySelectorAll('[data-nav-id]')];
         if (all.indexOf(dragSrc) < all.indexOf(target)) {
@@ -1729,7 +1761,7 @@
       popover.innerHTML = hiddenDomainItems.map(id => {
         const d = DOMAINS.find(x => x.id === id);
         if (!d) return '';
-        return `<div class="more-popover-item" data-domain-id="${d.id}"><span class="nav-icon">${d.icon}</span>${d.label}</div>`;
+        return `<div class="more-popover-item" draggable="true" data-nav-id="${d.id}" data-domain-id="${d.id}"><span class="nav-icon">${d.icon}</span>${d.label}</div>`;
       }).join('');
     }
 
