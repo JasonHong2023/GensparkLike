@@ -1620,11 +1620,10 @@
 
     function applyNavOrder() {
       const navTop = document.querySelector('.nav-top');
-      if (!navTop) return;
+      const moreItem = document.getElementById('nav-more');
+      if (!navTop || !moreItem) return;
       const order = getNavOrder();
       if (!order) return;
-      const anchor = document.querySelector('[data-nav-id="home"]');
-      if (!anchor) return;
       const items = [...navTop.querySelectorAll('[data-nav-id]')].filter(el =>
         el.dataset.navId !== 'new' && el.dataset.navId !== 'home'
       );
@@ -1636,7 +1635,7 @@
         if (bi === -1) return -1;
         return ai - bi;
       });
-      items.forEach(el => anchor.parentNode.insertBefore(el, anchor.nextSibling));
+      items.forEach(el => moreItem.parentNode.insertBefore(el, moreItem));
     }
 
     function setupNavDrag() {
