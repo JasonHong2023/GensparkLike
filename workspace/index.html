@@ -324,18 +324,35 @@
       justify-content: space-between;
       flex-shrink: 0;
       z-index: 10;
-      transition: background 0.25s ease, border-color 0.25s ease;
+      transition: background 0.25s ease, border-color 0.25s ease, width 0.2s ease;
     }
     .sidebar.collapsed {
-      width: 56px;
-      transition: width 0.2s ease;
+      width: 0;
+      padding: 16px 0;
+      overflow: hidden;
+      border-right: none;
+      flex-shrink: 1;
+      min-width: 0;
     }
-    .sidebar.collapsed .nav-item { font-size: 0; }
-    .sidebar.collapsed .nav-item .nav-label { display: none; }
-    .sidebar.collapsed .sidebar-toggle .nav-icon { transform: rotate(180deg); }
-    .sidebar-toggle { opacity: 0.45; transition: opacity 0.15s ease; }
-    .sidebar-toggle:hover { opacity: 1; }
-    .sidebar-toggle .nav-icon { transition: transform 0.2s ease; }
+    .sidebar-toggle {
+      position: absolute;
+      bottom: 16px;
+      left: 72px;
+      z-index: 20;
+      width: 18px; height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: left 0.2s ease, background 0.15s ease, color 0.15s ease;
+    }
+    .sidebar-toggle:hover { background: var(--surface-hover); color: var(--text); }
+    .sidebar.collapsed + .sidebar-toggle { left: 0; }
     .nav-top {
       display: flex;
       flex-direction: column;
@@ -1073,9 +1090,9 @@
     <div class="more-popover hidden" id="more-popover"></div>
     <div class="nav-bottom">
       <div class="nav-item" id="user-avatar"><span class="nav-icon">👤</span></div>
-      <div class="nav-item sidebar-toggle" id="sidebar-toggle"><span class="nav-icon">◀</span><span class="nav-label">收合</span></div>
     </div>
   </aside>
+  <div class="sidebar-toggle" id="sidebar-toggle">◀</div>
 
   <!-- User Menu Dropdown -->
   <div class="user-menu hidden" id="user-menu">
@@ -1796,23 +1813,14 @@
     if (toggleBtn && sidebar) {
       if (localStorage.getItem('gs-sidebar-collapsed') === 'true') {
         sidebar.classList.add('collapsed');
-        toggleBtn.querySelector('.nav-label').textContent = '展開';
-        toggleBtn.querySelector('.nav-icon').textContent = '▶';
+        toggleBtn.textContent = '▶';
       }
       toggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const wasCollapsed = sidebar.classList.toggle('collapsed');
         localStorage.setItem('gs-sidebar-collapsed', wasCollapsed);
-        const label = toggleBtn.querySelector('.nav-label');
-        const icon = toggleBtn.querySelector('.nav-icon');
-        if (wasCollapsed) {
-          label.textContent = '展開';
-          icon.textContent = '▶';
-        } else {
-          label.textContent = '收合';
-          icon.textContent = '◀';
-        }
-        setTimeout(checkNavOverflow, 250);
+        toggleBtn.textContent = wasCollapsed ? '▶' : '◀';
+        setTimeout(checkNavOverflow, 300);
       });
     }
 
